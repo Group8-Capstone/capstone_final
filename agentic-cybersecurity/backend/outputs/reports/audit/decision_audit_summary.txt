@@ -1,0 +1,24 @@
+DECISION AUDIT REPORT
+============================================================
+
+Generated On: 2026-05-22 23:45:38.848722
+
+Audit Status: COMPLETED
+
+SECURITY MODULE STATUS
+----------------------------------------
+intrusion_detection: ACTIVE
+fraud_detection: ACTIVE
+ueba_monitoring: ACTIVE
+streaming_monitoring: ACTIVE
+explainability: ACTIVE
+
+AI MODELS
+----------------------------------------
+- Autoencoder
+- CNN-LSTM
+- Transformer
+- XGBoost
+- LANL UEBA
+
+SYSTEM STATUS: ACTIVE

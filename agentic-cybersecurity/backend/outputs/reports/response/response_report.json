@@ -1,0 +1,32 @@
+{
+    "timestamp": "2026-05-22 23:45:38.848889",
+    "system_status": "ACTIVE",
+    "incident_response": {
+        "total_alerts": 15,
+        "critical_alerts": 4,
+        "high_alerts": 6,
+        "medium_alerts": 3,
+        "low_alerts": 2
+    },
+    "actions_executed": [
+        "IP Blocked",
+        "Threat Escalated",
+        "User Session Terminated",
+        "Suspicious Traffic Isolated",
+        "Firewall Rule Applied",
+        "SOC Team Alerted"
+    ],
+    "response_statistics": {
+        "successful_responses": 12,
+        "pending_responses": 2,
+        "failed_responses": 1
+    },
+    "threat_categories": [
+        "DDoS",
+        "Brute Force",
+        "Port Scan",
+        "SQL Injection",
+        "Bot Activity"
+    ],
+    "status": "COMPLETED"
+}

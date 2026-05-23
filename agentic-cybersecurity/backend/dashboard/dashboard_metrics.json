@@ -1,0 +1,24 @@
+{
+    "system_status": "ACTIVE",
+    "generated_on": "2026-05-22 23:45:38.913246",
+    "trained_models": 6,
+    "reports_generated": 44,
+    "visualizations_generated": 22,
+    "explainability_outputs": 23,
+    "prediction_outputs": 4,
+    "modules": {
+        "intrusion_detection": "ACTIVE",
+        "fraud_detection": "ACTIVE",
+        "ueba": "ACTIVE",
+        "streaming": "ACTIVE",
+        "incident_response": "ACTIVE",
+        "ensemble_ai": "ACTIVE"
+    },
+    "models_loaded": [
+        "Autoencoder",
+        "CNN-LSTM",
+        "Transformer",
+        "XGBoost Fraud Detection",
+        "LANL UEBA"
+    ]
+}

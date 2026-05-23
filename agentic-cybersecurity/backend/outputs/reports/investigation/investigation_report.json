@@ -1,0 +1,7 @@
+{
+    "alerts_detected": 15,
+    "critical_alerts": 3,
+    "medium_alerts": 5,
+    "low_alerts": 7,
+    "status": "COMPLETED"
+}
