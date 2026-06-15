@@ -289,46 +289,30 @@ def incident_response():
     return [
 
         {
-
             "title": "Blocked IP Address",
-
             "description":
-
             "192.168.10.25 blocked due to DDoS activity",
-
             "status": "SUCCESS"
         },
 
         {
-
             "title": "Generated Alert",
-
             "description":
-
             "Critical malware behavior detected",
-
             "status": "ALERTED"
         },
 
         {
-
             "title": "Escalated Incident",
-
             "description":
-
             "SOC escalation initiated for insider threat",
-
             "status": "ESCALATED"
         },
 
         {
-
             "title": "Isolated Endpoint",
-
             "description":
-
             "Endpoint PC-104 isolated from network",
-
             "status": "ISOLATED"
         }
     ]
@@ -608,3 +592,155 @@ async def simulate_malware():
     })
 
     return result
+
+# =====================================
+# SHAP IMAGE
+# =====================================
+
+@router.get("/api/shap")
+def get_shap():
+
+    return {
+
+        "title": "SHAP Explanation",
+
+        "image":
+
+        "http://127.0.0.1:8000/outputs/explainability/shap/shap_summary.png"
+    }
+
+
+# =====================================
+# SHAP BAR IMAGE
+# =====================================
+
+@router.get("/api/shap-bar")
+def get_shap_bar():
+
+    return {
+
+        "title": "SHAP Bar Plot",
+
+        "image":
+
+        "http://127.0.0.1:8000/outputs/explainability/shap/shap_bar.png"
+    }
+
+
+# =====================================
+# LIME IMAGE
+# =====================================
+
+@router.get("/api/lime")
+def get_lime():
+
+    return {
+
+        "title": "LIME Explanation",
+
+        "image":
+
+        "http://127.0.0.1:8000/outputs/explainability/lime/lime_explanation.png"
+    }
+
+
+# =====================================
+# FEATURE IMPORTANCE
+# =====================================
+
+@router.get("/api/feature-importance")
+def get_feature_importance():
+
+    return {
+
+        "title": "Feature Importance",
+
+        "image":
+
+        "http://127.0.0.1:8000/outputs/explainability/feature_importance/feature_importance.png"
+    }
+
+
+# =====================================
+# PERMUTATION IMPORTANCE
+# =====================================
+
+@router.get("/api/permutation-importance")
+def get_permutation_importance():
+
+    return {
+
+        "title": "Permutation Importance",
+
+        "image":
+
+        "http://127.0.0.1:8000/outputs/explainability/permutation_importance/permutation_importance.png"
+    }
+
+
+# =====================================
+# CONFUSION MATRIX
+# =====================================
+
+@router.get("/api/confusion-matrix")
+def get_confusion_matrix():
+
+    return {
+
+        "title": "Confusion Matrix",
+
+        "image":
+
+        "http://127.0.0.1:8000/outputs/reports/confusion_matrix/model_cm.png"
+    }
+
+
+# =====================================
+# ROC CURVE
+# =====================================
+
+@router.get("/api/roc")
+def get_roc():
+
+    return {
+
+        "title": "ROC Curve",
+
+        "image":
+
+        "http://127.0.0.1:8000/outputs/reports/roc_curves/model_roc.png"
+    }
+
+
+# =====================================
+# TRAINING ACCURACY
+# =====================================
+
+@router.get("/api/training-accuracy")
+def get_training_accuracy():
+
+    return {
+
+        "title": "Training Accuracy",
+
+        "image":
+
+        "http://127.0.0.1:8000/outputs/reports/accuracy_plots/model_accuracy.png"
+    }
+
+
+# =====================================
+# TRAINING LOSS
+# =====================================
+
+@router.get("/api/training-loss")
+def get_training_loss():
+
+    return {
+
+        "title": "Training Loss",
+
+        "image":
+
+        "http://127.0.0.1:8000/outputs/reports/accuracy_plots/model_loss.png"
+    }

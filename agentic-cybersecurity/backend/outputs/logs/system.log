@@ -244,3 +244,40 @@
 2026-05-22 23:45:38,912 - INFO - Inference pipeline completed
 2026-05-22 23:45:38,913 - INFO - All outputs generated
 2026-05-22 23:45:38,913 - INFO - Models loaded successfully
+2026-06-15 23:25:28,497 - INFO - FastAPI startup initialized
+2026-06-15 23:25:28,498 - INFO - Checking trained models
+2026-06-15 23:25:28,498 - INFO - Autoencoder model loaded
+2026-06-15 23:25:28,498 - INFO - CNN-LSTM model loaded
+2026-06-15 23:25:28,498 - INFO - Transformer model loaded
+2026-06-15 23:25:28,498 - INFO - Fraud Detection model loaded
+2026-06-15 23:25:28,498 - INFO - LANL model loaded
+2026-06-15 23:25:28,498 - INFO - All models initialized successfully
+2026-06-15 23:25:28,498 - INFO - Generating visualization outputs
+2026-06-15 23:25:38,756 - INFO - Evaluation pipeline completed
+2026-06-15 23:25:38,758 - INFO - Inference pipeline completed
+2026-06-15 23:25:38,760 - INFO - All outputs generated
+2026-06-15 23:25:38,760 - INFO - Models loaded successfully
+2026-06-15 23:51:00,012 - INFO - Checking trained models
+2026-06-15 23:51:00,012 - INFO - Autoencoder model loaded
+2026-06-15 23:51:00,012 - INFO - CNN-LSTM model loaded
+2026-06-15 23:51:00,012 - INFO - Transformer model loaded
+2026-06-15 23:51:00,012 - INFO - Fraud Detection model loaded
+2026-06-15 23:51:00,012 - INFO - LANL model loaded
+2026-06-15 23:51:00,012 - INFO - All models initialized successfully
+2026-06-15 23:51:00,012 - INFO - Generating visualization outputs
+2026-06-15 23:51:06,738 - INFO - Evaluation pipeline completed
+2026-06-15 23:51:06,739 - INFO - Inference pipeline completed
+2026-06-15 23:51:06,740 - INFO - All outputs generated
+2026-06-15 23:51:06,740 - INFO - FastAPI startup initialized
+2026-06-15 23:51:06,740 - INFO - Checking trained models
+2026-06-15 23:51:06,740 - INFO - Autoencoder model loaded
+2026-06-15 23:51:06,740 - INFO - CNN-LSTM model loaded
+2026-06-15 23:51:06,740 - INFO - Transformer model loaded
+2026-06-15 23:51:06,740 - INFO - Fraud Detection model loaded
+2026-06-15 23:51:06,740 - INFO - LANL model loaded
+2026-06-15 23:51:06,740 - INFO - All models initialized successfully
+2026-06-15 23:51:06,740 - INFO - Generating visualization outputs
+2026-06-15 23:51:12,065 - INFO - Evaluation pipeline completed
+2026-06-15 23:51:12,065 - INFO - Inference pipeline completed
+2026-06-15 23:51:12,067 - INFO - All outputs generated
+2026-06-15 23:51:12,067 - INFO - Models loaded successfully

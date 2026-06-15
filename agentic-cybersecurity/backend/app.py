@@ -27,6 +27,10 @@ from streaming.websocket_manager import (
     websocket_manager
 )
 
+from services.monitoring_engine import (
+    start_monitoring
+)
+
 # =====================================
 # FASTAPI APP
 # =====================================
@@ -92,6 +96,16 @@ app.mount(
 
 @app.on_event("startup")
 async def startup_event():
+
+    initialize_models()
+    
+    asyncio.create_task(
+        start_monitoring()
+    )
+
+    print(
+        "Automatic Monitoring Enabled"
+    )
 
     print("=" * 70)
     print("STARTING CYBERSECURITY API")
