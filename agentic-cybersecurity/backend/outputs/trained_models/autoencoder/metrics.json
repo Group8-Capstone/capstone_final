@@ -1,8 +1,8 @@
 {
     "model": "Autoencoder",
-    "average_error": 0.00381,
-    "maximum_error": 0.125937,
-    "threshold": 0.016464,
+    "average_error": 0.003403,
+    "maximum_error": 0.367409,
+    "threshold": 0.016227,
     "anomalies_detected": 2500,
     "normal_records": 47500,
     "anomaly_percentage": 5.0

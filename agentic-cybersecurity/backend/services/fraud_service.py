@@ -82,7 +82,7 @@ class FraudDetectionService:
 
             "model": "XGBoost Fraud Detection",
 
-            "dataset": "Credit Card Fraud",
+            "dataset": "Credit Card Fraud",s
 
             "timestamp": datetime.now().strftime(
                 "%Y-%m-%d %H:%M:%S"

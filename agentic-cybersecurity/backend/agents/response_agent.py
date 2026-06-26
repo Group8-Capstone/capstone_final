@@ -1,3 +1,5 @@
+import os
+import json
 import datetime
 
 
@@ -7,9 +9,22 @@ class ResponseAgent:
 
         self.responses = []
 
+        self.output_dir = (
+            "outputs/reports/response"
+        )
+
+        os.makedirs(
+            self.output_dir,
+            exist_ok=True
+        )
+
         print("=" * 60)
         print("RESPONSE AGENT INITIALIZED")
         print("=" * 60)
+
+    # =====================================================
+    # INCIDENT RESPONSE
+    # =====================================================
 
     def respond(self, investigation_result):
 
@@ -19,150 +34,326 @@ class ResponseAgent:
 
         try:
 
-            # =====================================
-            # EXTRACT DATA
-            # =====================================
-
-            threat_level = investigation_result.get(
-
-                "threat_level",
-
-                "LOW"
-            )
-
             attack_type = investigation_result.get(
-
                 "attack_type",
-
                 "Unknown"
             )
 
-            confidence_score = investigation_result.get(
+            threat_level = investigation_result.get(
+                "threat_level",
+                "LOW"
+            )
 
-                "confidence_score",
-
+            confidence = investigation_result.get(
+                "confidence",
                 0
             )
 
-            # =====================================
-            # RESPONSE ACTION LOGIC
-            # =====================================
+            #################################################
 
-            if threat_level == "CRITICAL":
+            action = self.get_action(
+                threat_level
+            )
 
-                action = "BLOCK_IP"
+            firewall = self.get_firewall_action(
+                attack_type
+            )
 
-                status = "executed"
+            endpoint = self.get_endpoint_action(
+                threat_level
+            )
 
-                mitigation = (
+            notification = self.get_soc_notification(
+                threat_level
+            )
 
-                    "Source IP blocked immediately"
-                )
+            recovery = self.get_recovery_time(
+                threat_level
+            )
 
-            elif threat_level == "HIGH":
+            playbook = self.get_playbook(
+                attack_type
+            )
 
-                action = "ISOLATE_SYSTEM"
+            #################################################
 
-                status = "executed"
+            report = {
 
-                mitigation = (
-
-                    "Affected endpoint isolated "
-                    "from network"
-                )
-
-            elif threat_level == "MEDIUM":
-
-                action = "ALERT_ADMIN"
-
-                status = "pending"
-
-                mitigation = (
-
-                    "Security administrator "
-                    "notification triggered"
-                )
-
-            else:
-
-                action = "MONITOR"
-
-                status = "monitoring"
-
-                mitigation = (
-
-                    "Continuous monitoring enabled"
-                )
-
-            # =====================================
-            # RESPONSE RESULT
-            # =====================================
-
-            response_result = {
-
-                "timestamp": str(
+                "timestamp":
+                str(
                     datetime.datetime.now()
                 ),
 
-                "attack_type": attack_type,
+                "attack_type":
+                attack_type,
 
-                "threat_level": threat_level,
+                "threat_level":
+                threat_level,
 
-                "confidence_score": confidence_score,
+                "confidence":
+                round(
+                    float(confidence),
+                    4
+                ),
 
-                "action": action,
+                "response_action":
+                action,
 
-                "status": status,
+                "firewall_action":
+                firewall,
 
-                "mitigation": mitigation
+                "endpoint_action":
+                endpoint,
+
+                "soc_notification":
+                notification,
+
+                "estimated_recovery":
+                recovery,
+
+                "playbook":
+                playbook,
+
+                "status":
+                "Completed"
+
             }
 
-            # =====================================
-            # STORE RESPONSE
-            # =====================================
+            #################################################
 
             self.responses.append(
-                response_result
+                report
             )
 
-            print(
-                f"Threat Level: "
-                f"{threat_level}"
-            )
+            #################################################
 
-            print(
-                f"Attack Type: "
-                f"{attack_type}"
-            )
+            with open(
 
-            print(
-                f"Response Action: "
-                f"{action}"
-            )
+                os.path.join(
 
-            print(
-                f"Response Status: "
-                f"{status}"
-            )
+                    self.output_dir,
 
-            print(
-                f"Mitigation: "
-                f"{mitigation}"
-            )
+                    "response_report.json"
+
+                ),
+
+                "w"
+
+            ) as f:
+
+                json.dump(
+
+                    report,
+
+                    f,
+
+                    indent=4
+
+                )
+
+            #################################################
+
+            print(f"Attack Type      : {attack_type}")
+            print(f"Threat Level     : {threat_level}")
+            print(f"Action           : {action}")
+            print(f"Firewall         : {firewall}")
+            print(f"Endpoint         : {endpoint}")
+            print(f"SOC Notification : {notification}")
 
             print("=" * 60)
 
-            return response_result
+            return report
 
         except Exception as e:
 
-            print(
-                f"Response generation error: {e}"
-            )
+            print(e)
 
             return {
 
                 "status": "failed",
 
                 "message": str(e)
+
             }
+
+    # =====================================================
+    # RESPONSE ACTION
+    # =====================================================
+
+    def get_action(self, level):
+
+        mapping = {
+
+            "CRITICAL":
+            "Block Traffic Immediately",
+
+            "HIGH":
+            "Isolate Endpoint",
+
+            "MEDIUM":
+            "Notify Security Team",
+
+            "LOW":
+            "Continue Monitoring"
+
+        }
+
+        return mapping.get(
+
+            level,
+
+            "Manual Investigation"
+
+        )
+
+    # =====================================================
+    # FIREWALL
+    # =====================================================
+
+    def get_firewall_action(self, attack):
+
+        mapping = {
+
+            "DDoS":
+            "Block Source IP",
+
+            "PortScan":
+            "Close Target Ports",
+
+            "Bot":
+            "Block Command & Control",
+
+            "SQLInjection":
+            "Enable WAF Rule",
+
+            "BruteForce":
+            "Rate Limit Login Requests",
+
+            "Normal":
+            "No Action"
+
+        }
+
+        return mapping.get(
+
+            attack,
+
+            "Review Firewall"
+
+        )
+
+    # =====================================================
+    # ENDPOINT
+    # =====================================================
+
+    def get_endpoint_action(self, level):
+
+        if level == "CRITICAL":
+
+            return "Disconnect Endpoint"
+
+        elif level == "HIGH":
+
+            return "Isolate Endpoint"
+
+        elif level == "MEDIUM":
+
+            return "Scan Endpoint"
+
+        return "No Action"
+
+    # =====================================================
+    # SOC
+    # =====================================================
+
+    def get_soc_notification(self, level):
+
+        if level in [
+
+            "CRITICAL",
+
+            "HIGH"
+
+        ]:
+
+            return "Immediate"
+
+        elif level == "MEDIUM":
+
+            return "Within 30 Minutes"
+
+        return "Not Required"
+
+    # =====================================================
+    # RECOVERY
+    # =====================================================
+
+    def get_recovery_time(self, level):
+
+        mapping = {
+
+            "CRITICAL":
+            "4-6 Hours",
+
+            "HIGH":
+            "2-4 Hours",
+
+            "MEDIUM":
+            "30-60 Minutes",
+
+            "LOW":
+            "Monitoring Only"
+
+        }
+
+        return mapping.get(
+
+            level,
+
+            "Unknown"
+
+        )
+
+    # =====================================================
+    # PLAYBOOK
+    # =====================================================
+
+    def get_playbook(self, attack):
+
+        mapping = {
+
+            "DDoS":
+            "DDoS Mitigation Playbook",
+
+            "PortScan":
+            "Reconnaissance Playbook",
+
+            "Bot":
+            "Botnet Containment Playbook",
+
+            "SQLInjection":
+            "Web Application Playbook",
+
+            "BruteForce":
+            "Credential Attack Playbook",
+
+            "Normal":
+            "No Response Required"
+
+        }
+
+        return mapping.get(
+
+            attack,
+
+            "Generic Incident Response"
+
+        )
+
+    # =====================================================
+    # HISTORY
+    # =====================================================
+
+    def get_history(self):
+
+        return self.responses

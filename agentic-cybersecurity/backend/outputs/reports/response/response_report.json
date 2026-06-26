@@ -1,32 +1,13 @@
 {
-    "timestamp": "2026-06-27 01:44:47.199433",
-    "system_status": "ACTIVE",
-    "incident_response": {
-        "total_alerts": 15,
-        "critical_alerts": 4,
-        "high_alerts": 6,
-        "medium_alerts": 3,
-        "low_alerts": 2
-    },
-    "actions_executed": [
-        "IP Blocked",
-        "Threat Escalated",
-        "User Session Terminated",
-        "Suspicious Traffic Isolated",
-        "Firewall Rule Applied",
-        "SOC Team Alerted"
-    ],
-    "response_statistics": {
-        "successful_responses": 12,
-        "pending_responses": 2,
-        "failed_responses": 1
-    },
-    "threat_categories": [
-        "DDoS",
-        "Brute Force",
-        "Port Scan",
-        "SQL Injection",
-        "Bot Activity"
-    ],
-    "status": "COMPLETED"
+    "timestamp": "2026-06-27 03:38:14.794988",
+    "attack_type": "Not Applicable",
+    "threat_level": "LOW",
+    "confidence": 0.0,
+    "response_action": "Continue Monitoring",
+    "firewall_action": "Review Firewall",
+    "endpoint_action": "No Action",
+    "soc_notification": "Not Required",
+    "estimated_recovery": "Monitoring Only",
+    "playbook": "Generic Incident Response",
+    "status": "Completed"
 }

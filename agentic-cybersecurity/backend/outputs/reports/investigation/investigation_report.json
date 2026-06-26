@@ -1,7 +1,28 @@
 {
-    "alerts_detected": 15,
-    "critical_alerts": 3,
-    "medium_alerts": 5,
-    "low_alerts": 7,
-    "status": "COMPLETED"
+    "timestamp": "2026-06-27 03:38:14.794712",
+    "status": "normal",
+    "attack_type": "Not Applicable",
+    "severity": "LOW",
+    "threat_level": "LOW",
+    "confidence": 0.0,
+    "root_cause": "Unknown activity",
+    "recommendation": "Perform manual investigation.",
+    "mitre_mapping": "-",
+    "indicator_of_compromise": "Unknown",
+    "affected_assets": [],
+    "ml_result": {
+        "prediction": "Not Applicable",
+        "confidence": 0,
+        "cnn_confidence": 0,
+        "transformer_confidence": 0,
+        "message": "ML models are only applicable for CICIDS2017 (78-feature) data."
+    },
+    "rule_result": {
+        "rule_triggered": true,
+        "rule_name": "Brute Force Detection"
+    },
+    "ueba_result": {
+        "user_behavior": "abnormal",
+        "risk_score": 88
+    }
 }

@@ -1,229 +1,218 @@
 import os
+import joblib
 
-from utils.logger import (
-    log_message
-)
+from tensorflow.keras.models import load_model
 
-BASE_MODEL_DIR = (
-    'outputs/trained_models'
-)
+from utils.logger import log_message
 
+BASE_MODEL_DIR = "outputs/trained_models"
+
+# ============================================================
+# GLOBAL MODEL CACHE
+# ============================================================
+
+MODELS = {}
+
+# ============================================================
+# MODEL PATHS
+# ============================================================
+
+MODEL_PATHS = {
+
+    "autoencoder": f"{BASE_MODEL_DIR}/autoencoder/autoencoder.keras",
+
+    "cnn_lstm": f"{BASE_MODEL_DIR}/cnn_lstm/cnn_lstm.keras",
+
+    "transformer": f"{BASE_MODEL_DIR}/transformer/transformer.keras",
+
+    "fraud_detection": f"{BASE_MODEL_DIR}/fraud_detection/fraud_model.pkl",
+
+    "lanl": f"{BASE_MODEL_DIR}/lanl/lanl_model.pkl"
+
+}
+
+
+# ============================================================
+# INITIALIZE ALL MODELS
+# ============================================================
 
 def initialize_models():
 
-    print("=" * 60)
+    print("=" * 70)
     print("CHECKING TRAINED MODELS")
-    print("=" * 60)
+    print("=" * 70)
 
-    log_message(
-        "Checking trained models"
-    )
-
-    # =====================================
-    # MODEL PATHS
-    # =====================================
-
-    model_paths = {
-
-        'autoencoder': (
-
-            f'{BASE_MODEL_DIR}/'
-            'autoencoder/autoencoder.keras'
-        ),
-
-        'cnn_lstm': (
-
-            f'{BASE_MODEL_DIR}/'
-            'cnn_lstm/cnn_lstm.keras'
-        ),
-
-        'transformer': (
-
-            f'{BASE_MODEL_DIR}/'
-            'transformer/transformer.keras'
-        ),
-
-        'fraud_detection': (
-
-            f'{BASE_MODEL_DIR}/'
-            'fraud_detection/fraud_model.pkl'
-        ),
-
-        'lanl': (
-
-            f'{BASE_MODEL_DIR}/'
-            'lanl/lanl_model.pkl'
-        )
-    }
-
-    # =====================================
-    # AUTOENCODER
-    # =====================================
+    log_message("Checking trained models")
 
     check_and_initialize_model(
-
-        model_name='Autoencoder',
-
-        model_path=model_paths[
-            'autoencoder'
-        ],
-
-        trainer_function=train_autoencoder_model
+        "Autoencoder",
+        MODEL_PATHS["autoencoder"],
+        train_autoencoder_model
     )
-
-    # =====================================
-    # CNN-LSTM
-    # =====================================
 
     check_and_initialize_model(
-
-        model_name='CNN-LSTM',
-
-        model_path=model_paths[
-            'cnn_lstm'
-        ],
-
-        trainer_function=train_cnn_lstm_model
+        "CNN-LSTM",
+        MODEL_PATHS["cnn_lstm"],
+        train_cnn_lstm_model
     )
-
-    # =====================================
-    # TRANSFORMER
-    # =====================================
 
     check_and_initialize_model(
-
-        model_name='Transformer',
-
-        model_path=model_paths[
-            'transformer'
-        ],
-
-        trainer_function=train_transformer_model_pipeline
+        "Transformer",
+        MODEL_PATHS["transformer"],
+        train_transformer_model_pipeline
     )
-
-    # =====================================
-    # FRAUD DETECTION
-    # =====================================
 
     check_and_initialize_model(
-
-        model_name='Fraud Detection',
-
-        model_path=model_paths[
-            'fraud_detection'
-        ],
-
-        trainer_function=train_fraud_detection_model
+        "Fraud Detection",
+        MODEL_PATHS["fraud_detection"],
+        train_fraud_detection_model
     )
-
-    # =====================================
-    # LANL
-    # =====================================
 
     check_and_initialize_model(
-
-        model_name='LANL',
-
-        model_path=model_paths[
-            'lanl'
-        ],
-
-        trainer_function=train_lanl_pipeline
+        "LANL",
+        MODEL_PATHS["lanl"],
+        train_lanl_pipeline
     )
 
-    print("=" * 60)
+    # ======================================================
+    # LOAD ALL MODELS INTO MEMORY
+    # ======================================================
+
+    load_models()
+
+    print("=" * 70)
     print("ALL MODELS READY")
-    print("=" * 60)
+    print("=" * 70)
 
-    log_message(
-        "All models initialized successfully"
-    )
-
-    # =====================================
-    # IMPORTANT
-    # GENERATE OUTPUTS EVEN IF
-    # MODELS ALREADY EXIST
-    # =====================================
+    log_message("All models initialized successfully")
 
     generate_all_outputs()
 
 
-def check_and_initialize_model(
+# ============================================================
+# TRAIN IF MODEL DOESN'T EXIST
+# ============================================================
 
-    model_name,
-
-    model_path,
-
-    trainer_function
-):
+def check_and_initialize_model(model_name, model_path, trainer):
 
     try:
 
         if os.path.exists(model_path):
 
-            print(
-                f"{model_name} model already exists"
-            )
+            print(f"{model_name} model already exists")
 
-            log_message(
-                f"{model_name} model loaded"
-            )
+            log_message(f"{model_name} model found")
 
         else:
 
-            print(
-                f"{model_name} model not found"
-            )
+            print(f"{model_name} model not found")
 
-            print(
-                f"Training {model_name}..."
-            )
+            print(f"Training {model_name}...")
 
-            log_message(
-                f"Training started for "
-                f"{model_name}"
-            )
+            trainer()
 
-            trainer_function()
+            print(f"{model_name} training completed")
 
-            print(
-                f"{model_name} training completed"
-            )
-
-            log_message(
-                f"{model_name} training completed"
-            )
+            log_message(f"{model_name} trained successfully")
 
     except Exception as e:
 
-        print(
-            f"{model_name} initialization failed: {e}"
+        print(f"{model_name} initialization failed : {e}")
+
+        log_message(f"{model_name} initialization failed : {e}")
+
+
+# ============================================================
+# LOAD MODELS
+# ============================================================
+
+def load_models():
+
+    print("=" * 70)
+    print("LOADING MODELS")
+    print("=" * 70)
+
+    try:
+
+        MODELS["autoencoder"] = load_model(
+            MODEL_PATHS["autoencoder"]
         )
 
-        log_message(
-            f"{model_name} error: {e}"
+        print("✓ Autoencoder Loaded")
+
+    except Exception as e:
+
+        print(e)
+
+    try:
+
+        MODELS["cnn_lstm"] = load_model(
+            MODEL_PATHS["cnn_lstm"]
         )
 
+        print("✓ CNN-LSTM Loaded")
 
-# ==========================================
+    except Exception as e:
+
+        print(e)
+
+    try:
+
+        MODELS["transformer"] = load_model(
+            MODEL_PATHS["transformer"]
+        )
+
+        print("✓ Transformer Loaded")
+
+    except Exception as e:
+
+        print(e)
+
+    try:
+
+        MODELS["fraud_detection"] = joblib.load(
+            MODEL_PATHS["fraud_detection"]
+        )
+
+        print("✓ Fraud Model Loaded")
+
+    except Exception as e:
+
+        print(e)
+
+    try:
+
+        MODELS["lanl"] = joblib.load(
+            MODEL_PATHS["lanl"]
+        )
+
+        print("✓ LANL Model Loaded")
+
+    except Exception as e:
+
+        print(e)
+
+
+# ============================================================
+# GET MODEL
+# ============================================================
+
+def get_model(name):
+
+    return MODELS.get(name)
+
+
+# ============================================================
 # GENERATE OUTPUTS
-# ==========================================
+# ============================================================
 
 def generate_all_outputs():
 
     try:
 
-        print("=" * 60)
-        print("GENERATING OUTPUT ARTIFACTS")
-        print("=" * 60)
-
-        log_message(
-            "Generating visualization outputs"
-        )
-
-        # =====================================
-        # VISUALIZATION PIPELINE
-        # =====================================
+        print("=" * 70)
+        print("GENERATING OUTPUTS")
+        print("=" * 70)
 
         from pipelines.visualization_pipeline import (
             run_visualization_pipeline
@@ -231,29 +220,11 @@ def generate_all_outputs():
 
         run_visualization_pipeline()
 
-        # =====================================
-        # XAI PIPELINE
-        # =====================================
-
-        #from pipelines.xai_pipeline import (
-        #    run_xai_pipeline
-        #)
-
-        #run_xai_pipeline()
-
-        # =====================================
-        # EVALUATION PIPELINE
-        # =====================================
-
         from pipelines.evaluation_pipeline import (
             run_evaluation_pipeline
         )
 
         run_evaluation_pipeline()
-
-        # =====================================
-        # INFERENCE PIPELINE
-        # =====================================
 
         from pipelines.inference_pipeline import (
             run_inference_pipeline
@@ -261,79 +232,53 @@ def generate_all_outputs():
 
         run_inference_pipeline()
 
-        # =====================================
-        # DASHBOARD METRICS
-        # =====================================
-
         from utils.dashboard_metrics import (
             generate_dashboard_metrics
         )
 
         generate_dashboard_metrics()
 
-        print("=" * 60)
-        print("OUTPUT GENERATION COMPLETED")
-        print("=" * 60)
-
-        log_message(
-            "All outputs generated"
-        )
+        print("Output generation completed.")
 
     except Exception as e:
 
-        print(
-            f"Output generation failed: {e}"
-        )
-
-        log_message(
-            f"Output generation error: {e}"
-        )
+        print(e)
 
 
-# ==========================================
-# LAZY IMPORTS
-# ==========================================
+# ============================================================
+# TRAINERS
+# ============================================================
 
 def train_autoencoder_model():
 
-    from pipelines.train_autoencoder import (
-        train_autoencoder
-    )
+    from pipelines.train_autoencoder import train_autoencoder
 
     train_autoencoder()
 
 
 def train_cnn_lstm_model():
 
-    from pipelines.train_cnn_lstm import (
-        train_cnn_lstm
-    )
+    from pipelines.train_cnn_lstm import train_cnn_lstm
 
     train_cnn_lstm()
 
 
 def train_transformer_model_pipeline():
 
-    from pipelines.train_transformer import (
-        train_transformer
-    )
+    from pipelines.train_transformer import train_transformer
 
     train_transformer()
 
 
 def train_fraud_detection_model():
 
-    from pipelines.train_fraud_model import (
-        train_fraud_model
-    )
+    from pipelines.train_fraud_model import train_fraud_model
 
     train_fraud_model()
 
 
 def train_lanl_pipeline():
 
-    from pipelines.train_lanl_model import (
-        train_lanl_model
-    )
+    from pipelines.train_lanl_model import train_lanl_model
 
     train_lanl_model()

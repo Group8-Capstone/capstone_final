@@ -1,12 +1,16 @@
 import asyncio
 
-from api.routes import (
+from api.streaming_routes import (
     simulate_ddos,
     simulate_portscan,
-    simulate_malware,
+    simulate_malware
+)
+
+from api.prediction_routes import (
     predict_fraud,
     predict_ueba
 )
+
 
 async def start_monitoring():
 
@@ -36,14 +40,10 @@ async def start_monitoring():
 
             await predict_ueba()
 
-            print(
-                "Monitoring cycle completed"
-            )
+            print("Monitoring cycle completed")
 
         except Exception as e:
 
-            print(
-                f"Monitoring error: {e}"
-            )
+            print(f"Monitoring error: {e}")
 
         await asyncio.sleep(20)

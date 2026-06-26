@@ -1,30 +1,102 @@
-import { Link } from 'react-router-dom'
+import { NavLink } from "react-router-dom";
+
+import {
+  FiHome,
+  FiActivity,
+  FiShield,
+  FiCreditCard,
+  FiSearch,
+  FiAlertTriangle,
+  FiCpu,
+  FiUsers
+} from "react-icons/fi";
 
 function Sidebar() {
 
   return (
+
     <div className="sidebar">
 
-      <h2>Menu</h2>
+      <div className="sidebar-header">
 
-      <Link to="/">Dashboard</Link>
+        <h2>🛡 Agentic AI</h2>
 
-      <Link to="/streaming">Streaming</Link>
+        <p>Cybersecurity SOC</p>
 
-      <Link to="/intrusion">Intrusion Detection</Link>
+      </div>
 
-      <Link to="/fraud">Fraud Detection</Link>
+      <nav>
 
-      <Link to="/investigation">Investigation</Link>
+        <NavLink to="/" end>
 
-      <Link to="/response">Incident Response</Link>
+          <FiHome />
 
-      <Link to="/explainability">Explainability</Link>
+          <span>Dashboard</span>
 
-      <Link to="/ueba">UEBA</Link>
+        </NavLink>
+
+        <NavLink to="/streaming">
+
+          <FiActivity />
+
+          <span>Streaming</span>
+
+        </NavLink>
+
+        <NavLink to="/intrusion">
+
+          <FiShield />
+
+          <span>Intrusion Detection</span>
+
+        </NavLink>
+
+        <NavLink to="/fraud">
+
+          <FiCreditCard />
+
+          <span>Fraud Detection</span>
+
+        </NavLink>
+
+        <NavLink to="/investigation">
+
+          <FiSearch />
+
+          <span>Investigation</span>
+
+        </NavLink>
+
+        <NavLink to="/response">
+
+          <FiAlertTriangle />
+
+          <span>Incident Response</span>
+
+        </NavLink>
+
+        <NavLink to="/explainability">
+
+          <FiCpu />
+
+          <span>Explainability</span>
+
+        </NavLink>
+
+        <NavLink to="/ueba">
+
+          <FiUsers />
+
+          <span>UEBA</span>
+
+        </NavLink>
+
+      </nav>
 
     </div>
-  )
+
+  );
+
 }
 
-export default Sidebar
+export default Sidebar;

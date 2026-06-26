@@ -1,20 +1,15 @@
 import numpy as np
 
+from agents.ml_agent import MLAgent
+
 
 class DetectionAgent:
 
-    def __init__(
-
-        self,
-
-        models=None,
-
-        threshold=0.7
-    ):
-
-        self.models = models
+    def __init__(self, threshold=0.70):
 
         self.threshold = threshold
+
+        self.ml_agent = MLAgent()
 
         self.alerts = []
 
@@ -37,103 +32,98 @@ class DetectionAgent:
             if data is None:
 
                 return {
-
                     "status": "failed",
-
                     "message": "Input data is None"
                 }
 
-            # =====================================
-            # CONVERT TO NUMPY
-            # =====================================
-
-            if not isinstance(
-                data,
-                np.ndarray
-            ):
+            if not isinstance(data, np.ndarray):
 
                 data = np.array(data)
-
-            # =====================================
-            # HANDLE EMPTY INPUT
-            # =====================================
 
             if len(data) == 0:
 
                 return {
-
                     "status": "failed",
-
                     "message": "Empty input data"
                 }
 
+            data = data.astype(np.float32)
+
             # =====================================
-            # DUMMY PREDICTION LOGIC
+            # RUN ML MODELS
             # =====================================
 
-            anomaly_score = round(
+            prediction = self.ml_agent.predict(data)
 
-                np.random.uniform(
-                    0.5,
-                    1.0
-                ),
+            attack_type = prediction.get(
+                "prediction",
+                "Unknown"
+            )
 
-                4
+            confidence = float(
+                prediction.get(
+                    "confidence",
+                    0
+                )
             )
 
             # =====================================
-            # ATTACK LABELS
+            # DETERMINE STATUS
             # =====================================
 
-            attack_types = [
-
-                'DDoS',
-
-                'Bot',
-
-                'PortScan',
-
-                'BruteForce',
-
-                'SQLInjection',
-
-                'Normal'
-            ]
-
-            predicted_attack = np.random.choice(
-                attack_types
-            )
-
-            # =====================================
-            # THREAT STATUS
-            # =====================================
-
-            if anomaly_score >= self.threshold:
+            if confidence >= self.threshold:
 
                 status = "anomaly_detected"
-
-                severity = "HIGH"
 
             else:
 
                 status = "normal"
 
+            # =====================================
+            # DETERMINE SEVERITY
+            # =====================================
+
+            if confidence >= 0.95:
+
+                severity = "CRITICAL"
+
+            elif confidence >= 0.85:
+
+                severity = "HIGH"
+
+            elif confidence >= 0.70:
+
+                severity = "MEDIUM"
+
+            else:
+
                 severity = "LOW"
 
             # =====================================
-            # CREATE ALERT
+            # BUILD ALERT
             # =====================================
 
             alert = {
 
                 "status": status,
 
-                "attack_type": predicted_attack,
+                "attack_type": attack_type,
 
                 "severity": severity,
 
-                "score": float(
-                    anomaly_score
+                "score": round(
+                    confidence,
+                    4
+                ),
+
+                "cnn_confidence": prediction.get(
+                    "cnn_confidence",
+                    0
+                ),
+
+                "transformer_confidence": prediction.get(
+                    "transformer_confidence",
+                    0
                 ),
 
                 "records_analyzed": int(
@@ -141,31 +131,13 @@ class DetectionAgent:
                 )
             }
 
-            # =====================================
-            # STORE ALERT
-            # =====================================
-
             self.alerts.append(alert)
 
-            print(
-                f"Detection Status: "
-                f"{status}"
-            )
-
-            print(
-                f"Attack Type: "
-                f"{predicted_attack}"
-            )
-
-            print(
-                f"Confidence Score: "
-                f"{anomaly_score}"
-            )
-
-            print(
-                f"Records Analyzed: "
-                f"{len(data)}"
-            )
+            print(f"Detection Status : {status}")
+            print(f"Attack Type      : {attack_type}")
+            print(f"Severity         : {severity}")
+            print(f"Confidence       : {confidence:.4f}")
+            print(f"Records          : {len(data)}")
 
             print("=" * 60)
 
@@ -173,9 +145,7 @@ class DetectionAgent:
 
         except Exception as e:
 
-            print(
-                f"Detection error: {e}"
-            )
+            print(f"Detection Error : {e}")
 
             return {
 
@@ -183,3 +153,21 @@ class DetectionAgent:
 
                 "message": str(e)
             }
+
+    # =====================================
+    # GET ALERT HISTORY
+    # =====================================
+
+    def get_alerts(self):
+
+        return self.alerts
+
+    # =====================================
+    # CLEAR ALERT HISTORY
+    # =====================================
+
+    def clear_alerts(self):
+
+        self.alerts.clear()
+
+        print("Alert history cleared.")

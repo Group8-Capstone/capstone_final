@@ -1,3 +1,5 @@
+import os
+import json
 import datetime
 
 
@@ -7,9 +9,22 @@ class InvestigationAgent:
 
         self.investigations = []
 
+        self.output_dir = (
+            "outputs/reports/investigation"
+        )
+
+        os.makedirs(
+            self.output_dir,
+            exist_ok=True
+        )
+
         print("=" * 60)
         print("INVESTIGATION AGENT INITIALIZED")
         print("=" * 60)
+
+    # =====================================================
+    # MAIN INVESTIGATION
+    # =====================================================
 
     def investigate(
 
@@ -22,6 +37,7 @@ class InvestigationAgent:
         rule_result=None,
 
         ueba_result=None
+
     ):
 
         print("=" * 60)
@@ -30,155 +46,357 @@ class InvestigationAgent:
 
         try:
 
-            # =====================================
-            # DEFAULT VALUES
-            # =====================================
-
             attack_type = detection_result.get(
-
                 "attack_type",
-
                 "Unknown"
             )
 
-            detection_score = detection_result.get(
-
-                "score",
-
-                0
+            confidence = float(
+                detection_result.get(
+                    "score",
+                    0
+                )
             )
 
-            detection_status = detection_result.get(
-
+            status = detection_result.get(
                 "status",
-
                 "unknown"
             )
 
-            # =====================================
-            # THREAT LEVEL LOGIC
-            # =====================================
-
-            if detection_score >= 0.9:
-
-                threat_level = "CRITICAL"
-
-            elif detection_score >= 0.75:
-
-                threat_level = "HIGH"
-
-            elif detection_score >= 0.6:
-
-                threat_level = "MEDIUM"
-
-            else:
-
-                threat_level = "LOW"
-
-            # =====================================
-            # THREAT DESCRIPTION
-            # =====================================
-
-            threat_descriptions = {
-
-                "DDoS":
-                "Distributed denial-of-service "
-                "activity detected",
-
-                "Bot":
-                "Botnet traffic behavior identified",
-
-                "PortScan":
-                "Suspicious port scanning activity "
-                "detected",
-
-                "BruteForce":
-                "Multiple failed authentication "
-                "attempts observed",
-
-                "SQLInjection":
-                "Potential SQL injection pattern "
-                "detected",
-
-                "Normal":
-                "No malicious behavior detected"
-            }
-
-            details = threat_descriptions.get(
-
-                attack_type,
-
-                "Suspicious activity identified"
+            severity = detection_result.get(
+                "severity",
+                "LOW"
             )
 
-            # =====================================
-            # INVESTIGATION RESULT
-            # =====================================
+            #################################################
 
-            investigation_result = {
+            threat_level = self.get_threat_level(
+                confidence
+            )
 
-                "timestamp": str(
+            #################################################
+
+            root_cause = self.get_root_cause(
+                attack_type
+            )
+
+            #################################################
+
+            recommendation = self.get_recommendation(
+                attack_type
+            )
+
+            #################################################
+
+            mitre = self.get_mitre(
+                attack_type
+            )
+
+            #################################################
+
+            ioc = self.get_ioc(
+                attack_type
+            )
+
+            #################################################
+
+            affected_assets = self.get_assets(
+                attack_type
+            )
+
+            #################################################
+
+            report = {
+
+                "timestamp":
+
+                str(
                     datetime.datetime.now()
                 ),
 
-                "status": detection_status,
+                "status": status,
 
                 "attack_type": attack_type,
 
+                "severity": severity,
+
                 "threat_level": threat_level,
 
-                "confidence_score": detection_score,
+                "confidence": round(
+                    confidence,
+                    4
+                ),
 
-                "details": details,
+                "root_cause": root_cause,
+
+                "recommendation": recommendation,
+
+                "mitre_mapping": mitre,
+
+                "indicator_of_compromise": ioc,
+
+                "affected_assets": affected_assets,
 
                 "ml_result": ml_result,
 
                 "rule_result": rule_result,
 
                 "ueba_result": ueba_result
+
             }
 
-            # =====================================
-            # STORE INVESTIGATION
-            # =====================================
+            #################################################
 
             self.investigations.append(
-                investigation_result
+                report
             )
 
-            print(
-                f"Threat Level: "
-                f"{threat_level}"
-            )
+            #################################################
 
-            print(
-                f"Attack Type: "
-                f"{attack_type}"
-            )
+            with open(
 
-            print(
-                f"Confidence Score: "
-                f"{detection_score}"
-            )
+                os.path.join(
 
-            print(
-                f"Details: "
-                f"{details}"
-            )
+                    self.output_dir,
+
+                    "investigation_report.json"
+
+                ),
+
+                "w"
+
+            ) as f:
+
+                json.dump(
+
+                    report,
+
+                    f,
+
+                    indent=4
+
+                )
+
+            #################################################
+
+            print(f"Attack Type   : {attack_type}")
+            print(f"Threat Level  : {threat_level}")
+            print(f"Confidence    : {confidence}")
+            print(f"MITRE         : {mitre}")
 
             print("=" * 60)
 
-            return investigation_result
+            return report
 
         except Exception as e:
 
-            print(
-                f"Investigation error: {e}"
-            )
+            print(e)
 
             return {
 
                 "status": "failed",
 
                 "message": str(e)
+
             }
+
+    # =====================================================
+    # THREAT LEVEL
+    # =====================================================
+
+    def get_threat_level(self, score):
+
+        if score >= 0.95:
+
+            return "CRITICAL"
+
+        elif score >= 0.85:
+
+            return "HIGH"
+
+        elif score >= 0.70:
+
+            return "MEDIUM"
+
+        return "LOW"
+
+    # =====================================================
+    # ROOT CAUSE
+    # =====================================================
+
+    def get_root_cause(self, attack):
+
+        mapping = {
+
+            "DDoS":
+            "Large volume of malicious network traffic.",
+
+            "PortScan":
+            "Reconnaissance activity targeting open ports.",
+
+            "Bot":
+            "Compromised endpoint communicating with botnet.",
+
+            "SQLInjection":
+            "Malicious SQL query attempting database access.",
+
+            "BruteForce":
+            "Repeated authentication failures detected.",
+
+            "Normal":
+            "No malicious behaviour detected."
+
+        }
+
+        return mapping.get(
+
+            attack,
+
+            "Unknown activity"
+
+        )
+
+    # =====================================================
+    # MITRE
+    # =====================================================
+
+    def get_mitre(self, attack):
+
+        mapping = {
+
+            "DDoS": "T1498",
+
+            "PortScan": "T1046",
+
+            "Bot": "T1071",
+
+            "SQLInjection": "T1190",
+
+            "BruteForce": "T1110",
+
+            "Normal": "-"
+
+        }
+
+        return mapping.get(
+
+            attack,
+
+            "-"
+
+        )
+
+    # =====================================================
+    # IOC
+    # =====================================================
+
+    def get_ioc(self, attack):
+
+        mapping = {
+
+            "DDoS":
+            "Abnormal packet rate",
+
+            "PortScan":
+            "Multiple sequential port probes",
+
+            "Bot":
+            "Beaconing traffic",
+
+            "SQLInjection":
+            "Suspicious SQL payload",
+
+            "BruteForce":
+            "Repeated login failures",
+
+            "Normal":
+            "None"
+
+        }
+
+        return mapping.get(
+
+            attack,
+
+            "Unknown"
+
+        )
+
+    # =====================================================
+    # RECOMMENDATION
+    # =====================================================
+
+    def get_recommendation(self, attack):
+
+        mapping = {
+
+            "DDoS":
+            "Enable rate limiting and block attacker IP.",
+
+            "PortScan":
+            "Block source IP and monitor firewall logs.",
+
+            "Bot":
+            "Isolate infected endpoint immediately.",
+
+            "SQLInjection":
+            "Validate user input and enable WAF.",
+
+            "BruteForce":
+            "Lock account and enforce MFA.",
+
+            "Normal":
+            "No action required."
+
+        }
+
+        return mapping.get(
+
+            attack,
+
+            "Perform manual investigation."
+
+        )
+
+    # =====================================================
+    # AFFECTED ASSETS
+    # =====================================================
+
+    def get_assets(self, attack):
+
+        mapping = {
+
+            "DDoS":
+            ["Firewall", "Web Server"],
+
+            "PortScan":
+            ["Network Gateway"],
+
+            "Bot":
+            ["User Endpoint"],
+
+            "SQLInjection":
+            ["Application Server", "Database"],
+
+            "BruteForce":
+            ["Authentication Server"],
+
+            "Normal":
+            []
+
+        }
+
+        return mapping.get(
+
+            attack,
+
+            []
+        )
+
+    # =====================================================
+    # HISTORY
+    # =====================================================
+
+    def get_history(self):
+
+        return self.investigations

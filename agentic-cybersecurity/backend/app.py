@@ -19,6 +19,14 @@ from services.model_initializer import (
     initialize_models
 )
 
+from services.monitoring_engine import (
+    start_monitoring
+)
+
+from streaming.websocket_manager import (
+    websocket_manager
+)
+
 from utils.logger import (
     log_message
 )
@@ -27,33 +35,23 @@ from utils.create_output_folders import (
     create_output_folders
 )
 
-from streaming.websocket_manager import (
-    websocket_manager
-)
-
-from services.monitoring_engine import (
-    start_monitoring
-)
-
-# =====================================
+# =====================================================
 # FASTAPI APP
-# =====================================
+# =====================================================
 
 app = FastAPI(
 
     title="Agentic AI Cybersecurity",
 
-    description=(
-        "AI-powered Cybersecurity "
-        "Monitoring Platform"
-    ),
+    description="AI-powered Cybersecurity Monitoring Platform",
 
     version="1.0.0"
+
 )
 
-# =====================================
+# =====================================================
 # CORS
-# =====================================
+# =====================================================
 
 app.add_middleware(
 
@@ -65,12 +63,13 @@ app.add_middleware(
 
     allow_methods=["*"],
 
-    allow_headers=["*"],
+    allow_headers=["*"]
+
 )
 
-# =====================================
-# STATIC OUTPUTS
-# =====================================
+# =====================================================
+# STATIC FILES
+# =====================================================
 
 app.mount(
 
@@ -79,11 +78,8 @@ app.mount(
     StaticFiles(directory="outputs"),
 
     name="outputs"
-)
 
-# =====================================
-# DASHBOARD FILES
-# =====================================
+)
 
 app.mount(
 
@@ -92,79 +88,55 @@ app.mount(
     StaticFiles(directory="dashboard"),
 
     name="dashboard"
+
 )
 
-# =====================================
-# STARTUP EVENT
-# =====================================
+# =====================================================
+# STARTUP
+# =====================================================
 
 @app.on_event("startup")
 async def startup_event():
 
-    # =====================================
-    # CREATE OUTPUT DIRECTORIES
-    # =====================================
+    print("=" * 70)
+    print("STARTING CYBERSECURITY PLATFORM")
+    print("=" * 70)
 
     create_output_folders()
 
-    initialize_models()
-    
-    asyncio.create_task(
-        start_monitoring()
-    )
-
-    print(
-        "Automatic Monitoring Enabled"
-    )
-
-    print("=" * 70)
-    print("STARTING CYBERSECURITY API")
-    print("=" * 70)
-
-    log_message(
-        "FastAPI startup initialized"
-    )
-
     try:
-
-        # =================================
-        # INITIALIZE MODELS
-        # =================================
 
         initialize_models()
 
-        print("=" * 70)
-        print("MODELS LOADED SUCCESSFULLY")
-        print("=" * 70)
+        print("Models initialized successfully")
 
         log_message(
-            "Models loaded successfully"
+            "Models initialized successfully"
         )
 
     except Exception as e:
 
-        print(
-            f"Startup error: {e}"
-        )
+        print(f"Model initialization failed: {e}")
 
         log_message(
-            f"Startup error: {e}"
+            f"Model initialization failed: {e}"
         )
 
-# =====================================
-# INCLUDE ROUTES
-# =====================================
+    asyncio.create_task(
+        start_monitoring()
+    )
 
-app.include_router(
+    print("Automatic Monitoring Started")
 
-    router,
+# =====================================================
+# ROUTES
+# =====================================================
 
-    tags=["Cybersecurity APIs"]
-)
+app.include_router(router)
 
-# =====================================
+# =====================================================
 # HOME
-# =====================================
+# =====================================================
 
 @app.get("/")
 def home():
@@ -175,63 +147,49 @@ def home():
 
         "Agentic AI Cybersecurity Platform Running",
 
-        "status": "ACTIVE"
+        "status":
+
+        "ACTIVE"
+
     }
 
-# =====================================
-# HEALTH CHECK
-# =====================================
+# =====================================================
+# HEALTH
+# =====================================================
 
 @app.get("/health")
-def health_check():
+def health():
 
     return {
 
-        "status": "healthy",
+        "status":
 
-        "api": "running",
+        "healthy"
 
-        "models": "loaded"
     }
 
-# =====================================
-# WEBSOCKET ENDPOINT
-# =====================================
+# =====================================================
+# WEBSOCKET
+# =====================================================
 
 @app.websocket("/ws")
-async def websocket_endpoint(
+async def websocket_endpoint(websocket: WebSocket):
 
-    websocket: WebSocket
-):
-
-    await websocket_manager.connect(
-        websocket
-    )
-
-    print(
-        "WebSocket connected"
-    )
+    await websocket_manager.connect(websocket)
 
     try:
 
         while True:
 
-            # Keep websocket alive
             await asyncio.sleep(1)
 
-    except Exception as e:
+    except Exception:
 
-        print(
-            f"WebSocket disconnected: {e}"
-        )
+        websocket_manager.disconnect(websocket)
 
-        websocket_manager.disconnect(
-            websocket
-        )
-
-# =====================================
-# TEST ALERT API
-# =====================================
+# =====================================================
+# TEST ALERT
+# =====================================================
 
 @app.get("/send-alert")
 async def send_alert():
@@ -243,40 +201,21 @@ async def send_alert():
         "severity": "HIGH",
 
         "message": "DDoS Attack Detected"
+
     })
 
     return {
 
-        "status": "Alert sent"
+        "status": "Alert Sent"
+
     }
 
-# =====================================
-# TEST LOW ALERT
-# =====================================
-
-@app.get("/send-low-alert")
-async def send_low_alert():
-
-    await websocket_manager.broadcast({
-
-        "type": "SECURITY_ALERT",
-
-        "severity": "LOW",
-
-        "message": "Suspicious Login Attempt"
-    })
-
-    return {
-
-        "status": "Low alert sent"
-    }
-
-# =====================================
-# TEST FRAUD ALERT
-# =====================================
+# =====================================================
+# TEST FRAUD
+# =====================================================
 
 @app.get("/send-fraud-alert")
-async def send_fraud_alert():
+async def send_fraud():
 
     await websocket_manager.broadcast({
 
@@ -284,10 +223,12 @@ async def send_fraud_alert():
 
         "severity": "CRITICAL",
 
-        "message": "Fraudulent Transaction Detected"
+        "message": "Fraud Detected"
+
     })
 
     return {
 
-        "status": "Fraud alert sent"
+        "status": "Fraud Alert Sent"
+
     }

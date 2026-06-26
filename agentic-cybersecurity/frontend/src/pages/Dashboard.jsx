@@ -16,13 +16,7 @@ import {
 import MetricCard from "../components/MetricCard";
 import API from "../services/api";
 
-const COLORS = [
-  "#ff4d4d",
-  "#ffcc00",
-  "#00ccff",
-  "#66cc66",
-  "#9966ff",
-];
+const COLORS = ["#ff4d4d", "#ffcc00", "#00ccff", "#66cc66", "#9966ff"];
 
 const defaultMetrics = {
   total_threats: 0,
@@ -93,7 +87,6 @@ function Dashboard() {
 
   return (
     <div>
-
       <h1>Agentic AI Cybersecurity Dashboard</h1>
 
       {/* ===========================
@@ -101,27 +94,16 @@ function Dashboard() {
       =========================== */}
 
       <div className="metric-grid">
-
-        <MetricCard
-          title="Threats"
-          value={metrics?.total_threats ?? 0}
-        />
+        <MetricCard title="Threats" value={metrics?.total_threats ?? 0} />
 
         <MetricCard
           title="Blocked Attacks"
           value={metrics?.blocked_attacks ?? 0}
         />
 
-        <MetricCard
-          title="Fraud Alerts"
-          value={metrics?.fraud_alerts ?? 0}
-        />
+        <MetricCard title="Fraud Alerts" value={metrics?.fraud_alerts ?? 0} />
 
-        <MetricCard
-          title="UEBA Alerts"
-          value={metrics?.ueba_alerts ?? 0}
-        />
-
+        <MetricCard title="UEBA Alerts" value={metrics?.ueba_alerts ?? 0} />
       </div>
 
       {/* ===========================
@@ -129,29 +111,19 @@ function Dashboard() {
       =========================== */}
 
       <div className="chart-container">
-
         <h2>Network Traffic</h2>
 
         <ResponsiveContainer width="100%" height={300}>
-
           <LineChart data={trafficData}>
-
             <XAxis dataKey="time" />
 
             <YAxis />
 
             <Tooltip />
 
-            <Line
-              type="monotone"
-              dataKey="traffic"
-              stroke="#00ffcc"
-            />
-
+            <Line type="monotone" dataKey="traffic" stroke="#00ffcc" />
           </LineChart>
-
         </ResponsiveContainer>
-
       </div>
 
       {/* ===========================
@@ -159,13 +131,10 @@ function Dashboard() {
       =========================== */}
 
       <div className="chart-container">
-
         <h2>Attack Distribution</h2>
 
         <ResponsiveContainer width="100%" height={320}>
-
           <PieChart>
-
             <Pie
               data={attackData}
               dataKey="value"
@@ -173,22 +142,14 @@ function Dashboard() {
               outerRadius={110}
               label
             >
-
               {attackData.map((entry, index) => (
-                <Cell
-                  key={index}
-                  fill={COLORS[index % COLORS.length]}
-                />
+                <Cell key={index} fill={COLORS[index % COLORS.length]} />
               ))}
-
             </Pie>
 
             <Tooltip />
-
           </PieChart>
-
         </ResponsiveContainer>
-
       </div>
 
       {/* ===========================
@@ -196,28 +157,19 @@ function Dashboard() {
       =========================== */}
 
       <div className="chart-container">
-
         <h2>Model Accuracy</h2>
 
         <ResponsiveContainer width="100%" height={320}>
-
           <BarChart data={modelData}>
-
             <XAxis dataKey="model" />
 
             <YAxis domain={[0, 100]} />
 
             <Tooltip />
 
-            <Bar
-              dataKey="accuracy"
-              fill="#00ff99"
-            />
-
+            <Bar dataKey="accuracy" fill="#00ff99" />
           </BarChart>
-
         </ResponsiveContainer>
-
       </div>
 
       {/* ===========================
@@ -225,43 +177,36 @@ function Dashboard() {
       =========================== */}
 
       <div className="chart-container">
-
         <h2>Autoencoder Performance</h2>
 
         <div className="metric-grid">
+          <MetricCard
+            title="Avg Error"
+            value={autoencoder?.average_error ?? 0}
+          />
 
-         <MetricCard
-          title="Avg Error"
-          value={autoencoder?.average_error ?? 0}
-        />
+          <MetricCard
+            title="Max Error"
+            value={autoencoder?.maximum_error ?? 0}
+          />
 
-        <MetricCard
-          title="Max Error"
-          value={autoencoder?.maximum_error ?? 0}
-        />
+          <MetricCard title="Threshold" value={autoencoder?.threshold ?? 0} />
 
-        <MetricCard
-          title="Threshold"
-          value={autoencoder?.threshold ?? 0}
-        />
+          <MetricCard
+            title="Anomalies"
+            value={autoencoder?.anomalies_detected ?? 0}
+          />
 
-        <MetricCard
-          title="Anomalies"
-          value={autoencoder?.anomalies_detected ?? 0}
-        />
+          <MetricCard
+            title="Normal Records"
+            value={autoencoder?.normal_records ?? 0}
+          />
 
-        <MetricCard
-          title="Normal Records"
-          value={autoencoder?.normal_records ?? 0}
-        />
-
-        <MetricCard
-          title="Anomaly %"
-          value={`${autoencoder?.anomaly_percentage ?? 0}%`}
-        />
-
+          <MetricCard
+            title="Anomaly %"
+            value={`${autoencoder?.anomaly_percentage ?? 0}%`}
+          />
         </div>
-
       </div>
 
       {/* ===========================
@@ -269,50 +214,30 @@ function Dashboard() {
       =========================== */}
 
       <div className="chart-container">
-
         <h2>LANL UEBA Performance</h2>
 
         <div className="metric-grid">
+          <MetricCard title="Algorithm" value={lanl?.algorithm ?? "-"} />
 
-          <MetricCard
-            title="Algorithm"
-            value={lanl?.algorithm ?? "-"}
-          />
+          <MetricCard title="Records" value={lanl?.total_records ?? 0} />
 
-          <MetricCard
-            title="Records"
-            value={lanl?.total_records ?? 0}
-          />
-
-          <MetricCard
-            title="Anomalies"
-            value={lanl?.anomalies_detected ?? 0}
-          />
+          <MetricCard title="Anomalies" value={lanl?.anomalies_detected ?? 0} />
 
           <MetricCard
             title="Normal Records"
             value={lanl?.normal_records ?? 0}
           />
 
-          <MetricCard
-            title="Users"
-            value={lanl?.unique_users ?? 0}
-          />
+          <MetricCard title="Users" value={lanl?.unique_users ?? 0} />
 
-          <MetricCard
-            title="Computers"
-            value={lanl?.unique_computers ?? 0}
-          />
+          <MetricCard title="Computers" value={lanl?.unique_computers ?? 0} />
 
           <MetricCard
             title="Anomaly %"
             value={`${lanl?.anomaly_percentage ?? 0}%`}
           />
-
         </div>
-
       </div>
-
     </div>
   );
 }
