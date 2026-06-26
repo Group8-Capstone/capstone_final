@@ -235,11 +235,11 @@ def generate_all_outputs():
         # XAI PIPELINE
         # =====================================
 
-        from pipelines.xai_pipeline import (
-            run_xai_pipeline
-        )
+        #from pipelines.xai_pipeline import (
+        #    run_xai_pipeline
+        #)
 
-        run_xai_pipeline()
+        #run_xai_pipeline()
 
         # =====================================
         # EVALUATION PIPELINE

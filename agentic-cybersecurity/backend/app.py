@@ -23,6 +23,10 @@ from utils.logger import (
     log_message
 )
 
+from utils.create_output_folders import (
+    create_output_folders
+)
+
 from streaming.websocket_manager import (
     websocket_manager
 )
@@ -96,6 +100,12 @@ app.mount(
 
 @app.on_event("startup")
 async def startup_event():
+
+    # =====================================
+    # CREATE OUTPUT DIRECTORIES
+    # =====================================
+
+    create_output_folders()
 
     initialize_models()
     

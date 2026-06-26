@@ -13,9 +13,9 @@ from pipelines.visualization_pipeline import (
     run_visualization_pipeline
 )
 
-from pipelines.xai_pipeline import (
-    run_xai_pipeline
-)
+#from pipelines.xai_pipeline import (
+#    run_xai_pipeline
+#)
 
 from pipelines.evaluation_pipeline import (
     run_evaluation_pipeline
@@ -78,7 +78,7 @@ def initialize_system():
         # RUN XAI PIPELINE
         # =====================================
 
-        run_xai_pipeline()
+        #run_xai_pipeline()
 
         # =====================================
         # RUN VISUALIZATION PIPELINE

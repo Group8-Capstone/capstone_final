@@ -1,23 +1,26 @@
 import os
+import joblib
 import shap
 import numpy as np
+import pandas as pd
 import matplotlib
 
-matplotlib.use('Agg')
+matplotlib.use("Agg")
 
 import matplotlib.pyplot as plt
 
-from utils.plot_style import (
-    apply_plot_style
-)
+from utils.plot_style import apply_plot_style
 
 
 def generate_shap_plot(
-
     model=None,
-
-    X_sample=None
+    X_sample=None,
+    feature_names=None,
+    model_name="fraud_detection"
 ):
+    """
+    Generate SHAP explanation using dynamic feature names.
+    """
 
     print("=" * 60)
     print("GENERATING SHAP EXPLANATION")
@@ -25,365 +28,198 @@ def generate_shap_plot(
 
     try:
 
-        # =====================================
-        # APPLY GLOBAL STYLE
-        # =====================================
-
         apply_plot_style()
 
-        # =====================================
-        # OUTPUT DIRECTORY
-        # =====================================
-
-        output_dir = (
-            'outputs/explainability/shap'
-        )
+        output_dir = "outputs/explainability/shap"
 
         os.makedirs(
-
             output_dir,
-
             exist_ok=True
         )
 
-        # =====================================
-        # REAL SHAP EXPLANATION
-        # =====================================
-
-        if model is not None and X_sample is not None:
-
-            print(
-                "Generating real SHAP "
-                "explanations..."
+        if model is None or X_sample is None:
+            raise ValueError(
+                "Model and input sample are required."
             )
 
-            # =================================
-            # LIMIT SAMPLE SIZE
-            # =================================
+        # ------------------------------------
+        # Load feature names automatically
+        # ------------------------------------
 
-            X_subset = X_sample[:100]
+        if feature_names is None:
 
-            # =================================
-            # CREATE SHAP EXPLAINER
-            # =================================
-
-            explainer = shap.TreeExplainer(
-                model
+            feature_path = (
+                f"outputs/trained_models/"
+                f"{model_name}/feature_names.pkl"
             )
 
-            shap_values = explainer.shap_values(
-                X_subset
+            if os.path.exists(feature_path):
+
+                feature_names = joblib.load(
+                    feature_path
+                )
+
+            else:
+
+                feature_names = [
+                    f"Feature_{i}"
+                    for i in range(X_sample.shape[1])
+                ]
+
+        # ------------------------------------
+        # Convert to DataFrame
+        # ------------------------------------
+
+        if not isinstance(X_sample, pd.DataFrame):
+
+            X_sample = pd.DataFrame(
+                X_sample,
+                columns=feature_names
             )
 
-            # =================================
-            # SUMMARY PLOT
-            # =================================
+        X_subset = X_sample.iloc[:100]
 
-            apply_plot_style()
+        # ------------------------------------
+        # SHAP Explainer
+        # ------------------------------------
 
-            plt.figure(figsize=(12, 6))
+        explainer = shap.TreeExplainer(model)
 
-            shap.summary_plot(
+        shap_values = explainer.shap_values(
+            X_subset
+        )
 
-                shap_values,
+        # ------------------------------------
+        # Summary Plot
+        # ------------------------------------
 
-                X_subset,
+        apply_plot_style()
 
-                show=False
-            )
+        plt.figure(figsize=(12, 6))
 
-            summary_path = os.path.join(
+        shap.summary_plot(
+            shap_values,
+            X_subset,
+            show=False
+        )
 
+        plt.tight_layout()
+
+        plt.savefig(
+            os.path.join(
                 output_dir,
+                "shap_summary.png"
+            ),
+            dpi=300,
+            bbox_inches="tight"
+        )
 
-                'shap_summary.png'
-            )
+        plt.close()
 
-            plt.savefig(
+        # ------------------------------------
+        # Bar Plot
+        # ------------------------------------
 
-                summary_path,
+        plt.figure(figsize=(12, 6))
 
-                dpi=300,
+        shap.summary_plot(
+            shap_values,
+            X_subset,
+            plot_type="bar",
+            show=False
+        )
 
-                bbox_inches='tight'
-            )
+        plt.tight_layout()
 
-            plt.close()
-
-            print(
-                "SHAP summary plot saved"
-            )
-
-            # =================================
-            # BAR PLOT
-            # =================================
-
-            apply_plot_style()
-
-            plt.figure(figsize=(10, 6))
-
-            shap.summary_plot(
-
-                shap_values,
-
-                X_subset,
-
-                plot_type='bar',
-
-                show=False
-            )
-
-            bar_path = os.path.join(
-
+        plt.savefig(
+            os.path.join(
                 output_dir,
+                "shap_bar.png"
+            ),
+            dpi=300,
+            bbox_inches="tight"
+        )
 
-                'shap_bar.png'
-            )
+        plt.close()
 
-            plt.savefig(
+        # ------------------------------------
+        # Trend Plot
+        # ------------------------------------
 
-                bar_path,
+        values = np.abs(
+            np.array(shap_values)
+        )
 
-                dpi=300,
+        if values.ndim == 3:
+            values = values[1]
 
-                bbox_inches='tight'
-            )
+        mean_values = values.mean(axis=0)
 
-            plt.close()
+        order = np.argsort(mean_values)
 
-            print(
-                "SHAP bar plot saved"
-            )
+        sorted_scores = mean_values[order]
 
-            # =================================
-            # WATERFALL STYLE FEATURE TREND
-            # =================================
+        sorted_features = np.array(
+            feature_names
+        )[order]
 
-            apply_plot_style()
+        plt.figure(figsize=(12, 6))
 
-            mean_shap = np.abs(
-                shap_values
-            ).mean(axis=0)
+        plt.plot(
+            sorted_scores,
+            marker="o"
+        )
 
-            sorted_indices = np.argsort(
-                mean_shap
-            )
+        plt.xticks(
+            range(len(sorted_features)),
+            sorted_features,
+            rotation=90
+        )
 
-            sorted_values = mean_shap[
-                sorted_indices
-            ]
+        plt.xlabel("Features")
+        plt.ylabel("Mean SHAP Value")
+        plt.title("SHAP Importance Trend")
 
-            plt.figure(figsize=(12, 6))
+        plt.tight_layout()
 
-            plt.plot(
-
-                sorted_values,
-
-                marker='o'
-            )
-
-            plt.title(
-                'SHAP Importance Trend'
-            )
-
-            plt.xlabel(
-                'Feature Index'
-            )
-
-            plt.ylabel(
-                'Mean SHAP Value'
-            )
-
-            plt.grid(True)
-
-            trend_path = os.path.join(
-
+        plt.savefig(
+            os.path.join(
                 output_dir,
+                "shap_trend.png"
+            ),
+            dpi=300,
+            bbox_inches="tight"
+        )
 
-                'shap_trend.png'
-            )
+        plt.close()
 
-            plt.savefig(
+        # ------------------------------------
+        # Histogram
+        # ------------------------------------
 
-                trend_path,
+        plt.figure(figsize=(10, 5))
 
-                dpi=300,
+        plt.hist(
+            mean_values,
+            bins=15
+        )
 
-                bbox_inches='tight'
-            )
+        plt.xlabel("Mean SHAP Value")
+        plt.ylabel("Frequency")
+        plt.title("SHAP Value Distribution")
 
-            plt.close()
+        plt.tight_layout()
 
-            print(
-                "SHAP trend plot saved"
-            )
-
-            # =================================
-            # HISTOGRAM
-            # =================================
-
-            apply_plot_style()
-
-            plt.figure(figsize=(10, 5))
-
-            plt.hist(
-
-                mean_shap,
-
-                bins=15
-            )
-
-            plt.title(
-                'SHAP Value Distribution'
-            )
-
-            plt.xlabel(
-                'Mean SHAP Value'
-            )
-
-            plt.ylabel(
-                'Frequency'
-            )
-
-            plt.grid(True)
-
-            histogram_path = os.path.join(
-
+        plt.savefig(
+            os.path.join(
                 output_dir,
+                "shap_histogram.png"
+            ),
+            dpi=300,
+            bbox_inches="tight"
+        )
 
-                'shap_histogram.png'
-            )
-
-            plt.savefig(
-
-                histogram_path,
-
-                dpi=300,
-
-                bbox_inches='tight'
-            )
-
-            plt.close()
-
-            print(
-                "SHAP histogram saved"
-            )
-
-        else:
-
-            print(
-                "Generating fallback "
-                "SHAP visualization..."
-            )
-
-            # =================================
-            # FALLBACK DUMMY VISUALIZATION
-            # =================================
-
-            x = np.arange(10)
-
-            y = np.random.uniform(
-                0,
-                1,
-                10
-            )
-
-            # =================================
-            # BAR CHART
-            # =================================
-
-            apply_plot_style()
-
-            plt.figure(figsize=(10, 5))
-
-            plt.bar(
-                x,
-                y
-            )
-
-            plt.title(
-                'SHAP Feature Importance'
-            )
-
-            plt.xlabel(
-                'Features'
-            )
-
-            plt.ylabel(
-                'Importance Score'
-            )
-
-            save_path = os.path.join(
-
-                output_dir,
-
-                'shap_summary.png'
-            )
-
-            plt.savefig(
-
-                save_path,
-
-                dpi=300,
-
-                bbox_inches='tight'
-            )
-
-            plt.close()
-
-            print(
-                "Fallback SHAP plot saved"
-            )
-
-            # =================================
-            # LINE TREND
-            # =================================
-
-            apply_plot_style()
-
-            plt.figure(figsize=(10, 5))
-
-            plt.plot(
-                x,
-                y,
-                marker='o'
-            )
-
-            plt.title(
-                'SHAP Importance Trend'
-            )
-
-            plt.xlabel(
-                'Feature Index'
-            )
-
-            plt.ylabel(
-                'Importance Score'
-            )
-
-            plt.grid(True)
-
-            trend_path = os.path.join(
-
-                output_dir,
-
-                'shap_trend.png'
-            )
-
-            plt.savefig(
-
-                trend_path,
-
-                dpi=300,
-
-                bbox_inches='tight'
-            )
-
-            plt.close()
-
-            print(
-                "Fallback SHAP trend saved"
-            )
+        plt.close()
 
         print("=" * 60)
         print("SHAP EXPLANATION COMPLETED")

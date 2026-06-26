@@ -19,11 +19,17 @@ def run_xai_pipeline(
 
     model=None,
 
+    X_train=None,
+
     X_sample=None,
+
+    y_test=None,
 
     feature_names=None,
 
-    importance_scores=None
+    importance_scores=None,
+
+    model_name="fraud_detection"
 ):
 
     print("=" * 60)
@@ -36,51 +42,113 @@ def run_xai_pipeline(
         # SHAP
         # =====================================
 
-        generate_shap_plot(
+        if model is not None and X_sample is not None:
 
-            model,
+            generate_shap_plot(
 
-            X_sample
-        )
+                model=model,
 
-        print(
-            "SHAP explainability generated"
-        )
+                X_sample=X_sample,
+
+                feature_names=feature_names,
+
+                model_name=model_name
+
+            )
+
+            print(
+                "SHAP explainability generated"
+            )
 
         # =====================================
         # LIME
         # =====================================
 
-        generate_lime_plot()
+        if (
 
-        print(
-            "LIME explainability generated"
-        )
+            model is not None
+
+            and X_train is not None
+
+            and X_sample is not None
+
+        ):
+
+            generate_lime_plot(
+
+                model=model,
+
+                X_train=X_train,
+
+                X_sample=X_sample[0]
+
+                if len(X_sample.shape) > 1
+
+                else X_sample,
+
+                model_name=model_name
+
+            )
+
+            print(
+                "LIME explainability generated"
+            )
 
         # =====================================
         # FEATURE IMPORTANCE
         # =====================================
 
-        save_feature_importance(
+        if (
 
-            feature_names,
+            feature_names is not None
 
-            importance_scores
-        )
+            and importance_scores is not None
 
-        print(
-            "Feature importance generated"
-        )
+        ):
+
+            save_feature_importance(
+
+                feature_names,
+
+                importance_scores
+
+            )
+
+            print(
+                "Feature importance generated"
+            )
 
         # =====================================
         # PERMUTATION IMPORTANCE
         # =====================================
 
-        save_permutation_importance()
+        if (
 
-        print(
-            "Permutation importance generated"
-        )
+            model is not None
+
+            and X_sample is not None
+
+            and y_test is not None
+
+            and feature_names is not None
+
+        ):
+
+            save_permutation_importance(
+
+                model,
+
+                X_sample,
+
+                y_test,
+
+                feature_names
+
+            )
+
+            print(
+                "Permutation importance generated"
+            )
 
         print("=" * 60)
         print("XAI PIPELINE COMPLETED")

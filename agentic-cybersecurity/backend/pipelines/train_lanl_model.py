@@ -34,6 +34,16 @@ def train_lanl_model():
     )
 
     # =====================================
+    # SAVE FEATURE NAMES
+    # =====================================
+
+    feature_names = df.columns.tolist()
+
+    print(
+        f"Total Features: {len(feature_names)}"
+    )
+
+    # =====================================
     # USE FULL DATASET
     # =====================================
 
@@ -62,15 +72,24 @@ def train_lanl_model():
     # SAVE MODEL
     # =====================================
 
-    save_path = (
-
+    model_path = (
         'outputs/trained_models/'
         'lanl/lanl_model.pkl'
     )
 
+    feature_path = (
+        'outputs/trained_models/'
+        'lanl/feature_names.pkl'
+    )
+
     joblib.dump(
         model,
-        save_path
+        model_path
+    )
+
+    joblib.dump(
+        feature_names,
+        feature_path
     )
 
     print("=" * 60)
@@ -78,7 +97,11 @@ def train_lanl_model():
     print("=" * 60)
 
     print(
-        f"Saved at: {save_path}"
+        f"Model Saved At: {model_path}"
+    )
+
+    print(
+        f"Feature Names Saved At: {feature_path}"
     )
 
 

@@ -11,7 +11,13 @@ from utils.plot_style import (
 )
 
 
-def save_permutation_importance():
+def save_permutation_importance(
+    model,
+    X_test,
+    y_test,
+    feature_names,
+    model_name="fraud_detection"
+):
 
     print("=" * 60)
     print("GENERATING PERMUTATION IMPORTANCE")

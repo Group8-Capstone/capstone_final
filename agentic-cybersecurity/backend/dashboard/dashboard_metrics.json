@@ -1,11 +1,11 @@
 {
     "system_status": "ACTIVE",
-    "generated_on": "2026-06-15 23:51:12.066787",
-    "trained_models": 6,
-    "reports_generated": 44,
+    "generated_on": "2026-06-26 20:46:39.108219",
+    "trained_models": 16,
+    "reports_generated": 25,
     "visualizations_generated": 22,
-    "explainability_outputs": 23,
-    "prediction_outputs": 4,
+    "explainability_outputs": 19,
+    "prediction_outputs": 1,
     "modules": {
         "intrusion_detection": "ACTIVE",
         "fraud_detection": "ACTIVE",

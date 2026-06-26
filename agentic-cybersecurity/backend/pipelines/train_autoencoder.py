@@ -1,14 +1,12 @@
+import joblib
 import numpy as np
 import pandas as pd
 
 from sklearn.preprocessing import MinMaxScaler
 
 from preprocessing.preprocess_cicids import preprocess_cicids
-
 from models.autoencoder.autoencoder_model import build_autoencoder
-
 from utils.save_training_plot import save_training_plot
-
 from utils.save_anomaly_scores import save_anomaly_scores
 
 
@@ -18,14 +16,12 @@ def train_autoencoder():
     print("AUTOENCODER TRAINING PIPELINE STARTED")
     print("====================================")
 
-    dataset_folder = 'datasets/cicids'
+    dataset_folder = "datasets/cicids"
 
-    # Load dataset
     df = preprocess_cicids(dataset_folder)
 
     print("Dataset loaded successfully")
 
-    # Sample dataset for development
     df = df.sample(
         50000,
         random_state=42
@@ -33,19 +29,17 @@ def train_autoencoder():
 
     print(f"Sampled Shape: {df.shape}")
 
-    # Keep only numeric columns
     df = df.select_dtypes(
         include=[
-            'float64',
-            'int64',
-            'float32',
-            'int32'
+            "float64",
+            "int64",
+            "float32",
+            "int32"
         ]
     )
 
     print("Numeric columns selected")
 
-    # Replace infinity values
     df.replace(
         [np.inf, -np.inf],
         np.nan,
@@ -54,17 +48,14 @@ def train_autoencoder():
 
     print("Infinity values replaced")
 
-    # Replace NaN values
     df = df.fillna(0)
 
     print("NaN values replaced")
 
-    # Convert to float32
-    df = df.astype('float32')
+    df = df.astype("float32")
 
     print("Converted dataset to float32")
 
-    # Extra protection against huge values
     df = df.clip(
         lower=-1e10,
         upper=1e10
@@ -72,36 +63,27 @@ def train_autoencoder():
 
     print("Extreme values clipped")
 
-    # Verify remaining invalid values
-    print(
-        "Remaining NaN:",
-        np.isnan(df.values).sum()
-    )
+    print("Remaining NaN:", np.isnan(df.values).sum())
+    print("Remaining Inf:", np.isinf(df.values).sum())
 
-    print(
-        "Remaining Inf:",
-        np.isinf(df.values).sum()
-    )
+    # -------------------------------
+    # Dynamic Feature Names
+    # -------------------------------
+    feature_names = df.columns.tolist()
 
-    # Feature Scaling
+    print(f"Total Features: {len(feature_names)}")
+
     scaler = MinMaxScaler()
 
-    X = scaler.fit_transform(
-        df.values
-    )
+    X = scaler.fit_transform(df.values)
 
     print("Feature scaling completed")
 
     input_dim = X.shape[1]
 
-    print(
-        f"Input Dimension: {input_dim}"
-    )
+    print(f"Input Dimension: {input_dim}")
 
-    # Build Autoencoder
-    model = build_autoencoder(
-        input_dim
-    )
+    model = build_autoencoder(input_dim)
 
     print("====================================")
     print("TRAINING AUTOENCODER MODEL")
@@ -120,15 +102,9 @@ def train_autoencoder():
     print("TRAINING COMPLETED")
     print("====================================")
 
-    # ====================================
-    # Generate anomaly scores
-    # ====================================
-
     print("Generating anomaly scores...")
 
-    reconstructions = model.predict(
-        X
-    )
+    reconstructions = model.predict(X)
 
     mse = np.mean(
         np.power(
@@ -138,37 +114,41 @@ def train_autoencoder():
         axis=1
     )
 
-    save_anomaly_scores(
-        mse
-    )
+    save_anomaly_scores(mse)
 
     print("Anomaly scores saved")
 
-    # ====================================
-    # Save training visualization
-    # ====================================
-
     save_training_plot(
         history,
-        'autoencoder'
+        "autoencoder"
     )
 
     print("Training plot saved")
 
-    # ====================================
-    # Save trained model
-    # ====================================
+    model_dir = "outputs/trained_models/autoencoder/"
 
     model.save(
-        'outputs/trained_models/'
-        'autoencoder/autoencoder.keras'
+        model_dir + "autoencoder.keras"
+    )
+
+    joblib.dump(
+        scaler,
+        model_dir + "scaler.pkl"
+    )
+
+    joblib.dump(
+        feature_names,
+        model_dir + "feature_names.pkl"
     )
 
     print("====================================")
     print("AUTOENCODER MODEL SAVED SUCCESSFULLY")
     print("====================================")
 
+    print(f"Model          : {model_dir}autoencoder.keras")
+    print(f"Scaler         : {model_dir}scaler.pkl")
+    print(f"Feature Names  : {model_dir}feature_names.pkl")
 
-if __name__ == '__main__':
 
+if __name__ == "__main__":
     train_autoencoder()

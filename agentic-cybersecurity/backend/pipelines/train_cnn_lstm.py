@@ -1,153 +1,253 @@
+import os
+import json
+import joblib
 import numpy as np
 import pandas as pd
 
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 from sklearn.preprocessing import LabelEncoder
-
 from sklearn.metrics import accuracy_score
 from sklearn.metrics import classification_report
 
 from preprocessing.preprocess_cicids import preprocess_cicids
-
 from models.cnn_lstm.cnn_lstm_model import build_cnn_lstm
 
 from utils.save_training_plot import save_training_plot
 from utils.save_confusion_matrix import save_confusion_matrix
-
 from utils.save_classification_report import save_classification_report
 from utils.save_roc_curve import save_roc_curve
 from utils.save_predictions import save_predictions
 
 
+MODEL_DIR = "outputs/trained_models/cnn_lstm"
+
+
+def create_output_directory():
+    os.makedirs(MODEL_DIR, exist_ok=True)
+
+
+def save_metadata(feature_names, scaler, encoder):
+    """
+    Save all preprocessing objects required during inference.
+    """
+
+    metadata = {
+        "feature_names": feature_names,
+        "feature_count": len(feature_names),
+        "model_type": "cnn_lstm",
+        "dataset": "CICIDS2017"
+    }
+
+    joblib.dump(
+        scaler,
+        os.path.join(MODEL_DIR, "scaler.pkl")
+    )
+
+    joblib.dump(
+        encoder,
+        os.path.join(MODEL_DIR, "label_encoder.pkl")
+    )
+
+    joblib.dump(
+        feature_names,
+        os.path.join(MODEL_DIR, "feature_names.pkl")
+    )
+
+    joblib.dump(
+        metadata,
+        os.path.join(MODEL_DIR, "model_metadata.pkl")
+    )
+
+    with open(
+        os.path.join(MODEL_DIR, "model_metadata.json"),
+        "w"
+    ) as f:
+        json.dump(metadata, f, indent=4)
+
+    print("Metadata saved successfully.")
+
+
 def train_cnn_lstm():
 
-    print("====================================")
+    print("=" * 60)
     print("CNN-LSTM TRAINING PIPELINE STARTED")
-    print("====================================")
+    print("=" * 60)
 
-    dataset_folder = 'datasets/cicids'
+    create_output_directory()
 
-    # Load dataset
+    dataset_folder = "datasets/cicids"
+
+    #############################################################
+    # Load Dataset
+    #############################################################
+
     df = preprocess_cicids(dataset_folder)
 
     print("Dataset loaded successfully")
+    print("Dataset Shape:", df.shape)
 
-    # Sample dataset for development
-    df = df.sample(
-        50000,
-        random_state=42
-    )
+    #############################################################
+    # Development Sampling
+    #############################################################
 
-    print(f"Sampled Shape: {df.shape}")
+    if len(df) > 50000:
+        df = df.sample(
+            50000,
+            random_state=42
+        )
 
-    # Remove spaces from column names
+    print("Working Shape:", df.shape)
+
+    #############################################################
+    # Clean Column Names
+    #############################################################
+
     df.columns = df.columns.str.strip()
 
-    # Replace infinity values
+    #############################################################
+    # Replace Invalid Values
+    #############################################################
+
     df.replace(
         [np.inf, -np.inf],
         np.nan,
         inplace=True
     )
 
-    print("Infinity values replaced")
+    df.fillna(0, inplace=True)
 
-    # Replace NaN values
-    df = df.fillna(0)
+    #############################################################
+    # Label
+    #############################################################
 
-    print("NaN values replaced")
+    if "Label" not in df.columns:
+        raise Exception("Label column not found.")
 
-    # Extract labels
-    y = df['Label']
+    y = df["Label"]
 
-    # Encode labels
     encoder = LabelEncoder()
 
     y = encoder.fit_transform(y)
 
-    # Select numeric features only
+    #############################################################
+    # Features
+    #############################################################
+
     X = df.select_dtypes(
-        include=['float64', 'int64', 'float32', 'int32']
+        include=[
+            "float64",
+            "float32",
+            "int64",
+            "int32"
+        ]
     )
 
-    # Remove label column if exists
-    if 'Label' in X.columns:
-        X = X.drop('Label', axis=1)
+    if "Label" in X.columns:
+        X = X.drop(columns=["Label"])
 
+    #############################################################
+    # Save Dynamic Feature Names
+    #############################################################
+
+    feature_names = X.columns.tolist()
+
+    print("\nNumber of Features :", len(feature_names))
+    print("First 10 Features :", feature_names[:10])
+
+    #############################################################
     # Convert datatype
-    X = X.astype('float32')
+    #############################################################
 
-    # Clip huge values
+    X = X.astype(np.float32)
+
+    #############################################################
+    # Remove Extreme Values
+    #############################################################
+
     X = X.clip(
         lower=-1e10,
         upper=1e10
     )
 
-    print("Extreme values clipped")
+    #############################################################
+    # Scale
+    #############################################################
 
-    # Verify invalid values
-    print(
-        "Remaining NaN:",
-        np.isnan(X.values).sum()
-    )
-
-    print(
-        "Remaining Inf:",
-        np.isinf(X.values).sum()
-    )
-
-    # Feature scaling
     scaler = StandardScaler()
 
-    X = scaler.fit_transform(X)
+    X_scaled = scaler.fit_transform(X)
 
-    print("Feature scaling completed")
+    #############################################################
+    # Save Metadata
+    #############################################################
 
-    X_train, X_test, y_train, y_test = train_test_split(
-        X,
-        y,
-        test_size=0.2,
-        random_state=42
+    save_metadata(
+        feature_names,
+        scaler,
+        encoder
     )
 
-    # Reshape for CNN-LSTM
+    #############################################################
+    # Train/Test Split
+    #############################################################
+
+    X_train, X_test, y_train, y_test = train_test_split(
+        X_scaled,
+        y,
+        test_size=0.20,
+        random_state=42,
+        stratify=y
+    )
+
+    #############################################################
+    # CNN-LSTM Reshape
+    #############################################################
+
     X_train = X_train.reshape(
-        (X_train.shape[0], X_train.shape[1], 1)
+        X_train.shape[0],
+        X_train.shape[1],
+        1
     )
 
     X_test = X_test.reshape(
-        (X_test.shape[0], X_test.shape[1], 1)
+        X_test.shape[0],
+        X_test.shape[1],
+        1
     )
 
-    print(f"Train Shape: {X_train.shape}")
+    print("Training Shape :", X_train.shape)
+    print("Testing Shape  :", X_test.shape)
 
-    # Build model
+    #############################################################
+    # Build Model
+    #############################################################
+
     model = build_cnn_lstm(
-        (X_train.shape[1], 1)
+        input_shape=(X_train.shape[1], 1)
     )
 
-    print("====================================")
-    print("TRAINING CNN-LSTM MODEL")
-    print("====================================")
+    #############################################################
+    # Train
+    #############################################################
 
     history = model.fit(
         X_train,
         y_train,
         epochs=10,
         batch_size=64,
-        validation_split=0.2,
+        validation_split=0.20,
         verbose=1
     )
 
-    print("====================================")
-    print("TRAINING COMPLETED")
-    print("====================================")
+    #############################################################
+    # Prediction
+    #############################################################
 
-    prediction_probabilities = model.predict(X_test)
+    probabilities = model.predict(X_test)
 
     predictions = (
-        prediction_probabilities > 0.5
+        probabilities > 0.5
     ).astype(int)
 
     accuracy = accuracy_score(
@@ -155,7 +255,7 @@ def train_cnn_lstm():
         predictions
     )
 
-    print("Accuracy:", accuracy)
+    print("\nAccuracy :", accuracy)
 
     print(
         classification_report(
@@ -164,42 +264,53 @@ def train_cnn_lstm():
         )
     )
 
-    # Save classification report
+    #############################################################
+    # Reports
+    #############################################################
+
     save_classification_report(
         y_test,
         predictions,
-        'cnn_lstm'
+        "cnn_lstm"
     )
 
-    # Save predictions
     save_predictions(
         predictions,
-        'cnn_lstm'
+        "cnn_lstm"
     )
 
-    # Save confusion matrix
     save_confusion_matrix(
         y_test,
         predictions,
-        'cnn_lstm'
+        "cnn_lstm"
     )
 
-    # Save training graph
     save_training_plot(
         history,
-        'cnn_lstm'
+        "cnn_lstm"
     )
 
-    # Save trained model
+    save_roc_curve(
+        y_test,
+        probabilities,
+        "cnn_lstm"
+    )
+
+    #############################################################
+    # Save Model
+    #############################################################
+
     model.save(
-        'outputs/trained_models/'
-        'cnn_lstm/cnn_lstm.keras'
+        os.path.join(
+            MODEL_DIR,
+            "cnn_lstm.keras"
+        )
     )
 
-    print("====================================")
-    print("CNN-LSTM MODEL SAVED SUCCESSFULLY")
-    print("====================================")
+    print("\nCNN-LSTM model saved successfully.")
+    print("Feature Count :", len(feature_names))
+    print("Metadata Saved :", MODEL_DIR)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     train_cnn_lstm()

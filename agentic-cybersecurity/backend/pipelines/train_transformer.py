@@ -1,3 +1,6 @@
+import os
+import json
+import joblib
 import numpy as np
 import pandas as pd
 
@@ -14,10 +17,50 @@ from models.transformer.transformer_model import build_transformer
 
 from utils.save_training_plot import save_training_plot
 from utils.save_confusion_matrix import save_confusion_matrix
-
 from utils.save_classification_report import save_classification_report
 from utils.save_roc_curve import save_roc_curve
 from utils.save_predictions import save_predictions
+
+
+MODEL_DIR = "outputs/trained_models/transformer"
+
+
+def save_metadata(feature_names, scaler, encoder):
+
+    os.makedirs(MODEL_DIR, exist_ok=True)
+
+    metadata = {
+        "model_name": "transformer",
+        "dataset": "CICIDS2017",
+        "feature_count": len(feature_names),
+        "feature_names": feature_names
+    }
+
+    joblib.dump(
+        feature_names,
+        os.path.join(MODEL_DIR, "feature_names.pkl")
+    )
+
+    joblib.dump(
+        scaler,
+        os.path.join(MODEL_DIR, "scaler.pkl")
+    )
+
+    joblib.dump(
+        encoder,
+        os.path.join(MODEL_DIR, "label_encoder.pkl")
+    )
+
+    joblib.dump(
+        metadata,
+        os.path.join(MODEL_DIR, "model_metadata.pkl")
+    )
+
+    with open(
+        os.path.join(MODEL_DIR, "model_metadata.json"),
+        "w"
+    ) as f:
+        json.dump(metadata, f, indent=4)
 
 
 def train_transformer():
@@ -26,59 +69,98 @@ def train_transformer():
     print("TRANSFORMER TRAINING PIPELINE STARTED")
     print("====================================")
 
-    dataset_folder = 'datasets/cicids'
+    os.makedirs(MODEL_DIR, exist_ok=True)
 
-    # Load dataset
+    dataset_folder = "datasets/cicids"
+
+    ############################################################
+    # Load Dataset
+    ############################################################
+
     df = preprocess_cicids(dataset_folder)
 
     print("Dataset loaded successfully")
 
-    # Sample dataset
-    df = df.sample(
-        50000,
-        random_state=42
-    )
+    ############################################################
+    # Sample Dataset
+    ############################################################
+
+    if len(df) > 50000:
+        df = df.sample(
+            50000,
+            random_state=42
+        )
 
     print(f"Sampled Shape: {df.shape}")
 
-    # Remove spaces from columns
+    ############################################################
+    # Clean Columns
+    ############################################################
+
     df.columns = df.columns.str.strip()
 
-    # Replace infinity values
+    ############################################################
+    # Remove Invalid Values
+    ############################################################
+
     df.replace(
         [np.inf, -np.inf],
         np.nan,
         inplace=True
     )
 
-    print("Infinity values replaced")
+    df.fillna(0, inplace=True)
 
-    # Replace NaN values
-    df = df.fillna(0)
+    print("Invalid values handled.")
 
-    print("NaN values replaced")
+    ############################################################
+    # Encode Labels
+    ############################################################
 
-    # Extract labels
-    y = df['Label']
+    y = df["Label"]
 
-    # Encode labels
     encoder = LabelEncoder()
 
     y = encoder.fit_transform(y)
 
-    # Select numeric features
+    ############################################################
+    # Select Features
+    ############################################################
+
     X = df.select_dtypes(
-        include=['float64', 'int64', 'float32', 'int32']
+        include=[
+            "float64",
+            "float32",
+            "int64",
+            "int32"
+        ]
     )
 
-    # Remove Label column
-    if 'Label' in X.columns:
-        X = X.drop('Label', axis=1)
+    if "Label" in X.columns:
+        X = X.drop(columns=["Label"])
 
+    ############################################################
+    # Save Dynamic Feature Names
+    ############################################################
+
+    feature_names = X.columns.tolist()
+
+    print("\nTotal Features :", len(feature_names))
+    print("First 10 Features :")
+
+    for feature in feature_names[:10]:
+        print(feature)
+
+    ############################################################
     # Convert datatype
-    X = X.astype('float32')
+    ############################################################
 
+    X = X.astype(np.float32)
+
+    ############################################################
     # Clip huge values
+    ############################################################
+
     X = X.clip(
         lower=-1e10,
         upper=1e10
@@ -86,34 +168,59 @@ def train_transformer():
 
     print("Extreme values clipped")
 
+    ############################################################
     # Verify invalid values
+    ############################################################
+
     print(
-        "Remaining NaN:",
+        "Remaining NaN :",
         np.isnan(X.values).sum()
     )
 
     print(
-        "Remaining Inf:",
+        "Remaining Inf :",
         np.isinf(X.values).sum()
     )
 
-    # Feature scaling
+    ############################################################
+    # Feature Scaling
+    ############################################################
+
     scaler = StandardScaler()
 
-    X = scaler.fit_transform(X)
+    X_scaled = scaler.fit_transform(X)
 
     print("Feature scaling completed")
 
-    X_train, X_test, y_train, y_test = train_test_split(
-        X,
-        y,
-        test_size=0.2,
-        random_state=42
+    ############################################################
+    # Save Metadata
+    ############################################################
+
+    save_metadata(
+        feature_names,
+        scaler,
+        encoder
     )
 
-    print(f"Train Shape: {X_train.shape}")
+    ############################################################
+    # Train Test Split
+    ############################################################
 
-    # Build transformer model
+    X_train, X_test, y_train, y_test = train_test_split(
+        X_scaled,
+        y,
+        test_size=0.20,
+        random_state=42,
+        stratify=y
+    )
+
+    print(f"Train Shape : {X_train.shape}")
+    print(f"Test Shape  : {X_test.shape}")
+
+    ############################################################
+    # Build Transformer
+    ############################################################
+
     model = build_transformer(
         (X_train.shape[1],)
     )
@@ -127,7 +234,7 @@ def train_transformer():
         y_train,
         epochs=10,
         batch_size=64,
-        validation_split=0.2,
+        validation_split=0.20,
         verbose=1
     )
 
@@ -135,16 +242,22 @@ def train_transformer():
     print("TRAINING COMPLETED")
     print("====================================")
 
-    predictions = model.predict(X_test)
+    ############################################################
+    # Prediction
+    ############################################################
 
-    predictions = (predictions > 0.5).astype(int)
+    probabilities = model.predict(X_test)
+
+    predictions = (
+        probabilities > 0.5
+    ).astype(int)
 
     accuracy = accuracy_score(
         y_test,
         predictions
     )
 
-    print("Accuracy:", accuracy)
+    print("\nAccuracy :", accuracy)
 
     print(
         classification_report(
@@ -152,43 +265,59 @@ def train_transformer():
             predictions
         )
     )
-    
-    # Save classification report
+
+    ############################################################
+    # Reports
+    ############################################################
+
     save_classification_report(
         y_test,
         predictions,
-        'transformer'
+        "transformer"
     )
 
-    # Save predictions
     save_predictions(
         predictions,
-        'transformer'
+        "transformer"
     )
 
-    # Save confusion matrix
     save_confusion_matrix(
         y_test,
         predictions,
-        'transformer'
+        "transformer"
     )
 
-    # Save training graph
     save_training_plot(
         history,
-        'transformer'
+        "transformer"
     )
 
-    # Save model
+    try:
+        save_roc_curve(
+            y_test,
+            probabilities,
+            "transformer"
+        )
+    except Exception as e:
+        print("ROC Curve skipped :", e)
+
+    ############################################################
+    # Save Model
+    ############################################################
+
     model.save(
-        'outputs/trained_models/'
-        'transformer/transformer.keras'
+        os.path.join(
+            MODEL_DIR,
+            "transformer.keras"
+        )
     )
 
-    print("====================================")
+    print("\n====================================")
     print("TRANSFORMER MODEL SAVED SUCCESSFULLY")
     print("====================================")
+    print("Feature Count :", len(feature_names))
+    print("Metadata Saved :", MODEL_DIR)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     train_transformer()

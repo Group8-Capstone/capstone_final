@@ -1,283 +1,31 @@
-2026-05-22 19:41:09,924 - INFO - FastAPI startup initialized
-2026-05-22 19:41:09,924 - INFO - Checking trained models
-2026-05-22 19:41:09,924 - INFO - Training started for Autoencoder
-2026-05-22 19:41:41,663 - INFO - Autoencoder training completed
-2026-05-22 19:41:41,663 - INFO - Training started for CNN-LSTM
-2026-05-22 19:42:44,955 - INFO - CNN-LSTM training completed
-2026-05-22 19:42:44,955 - INFO - Training started for Transformer
-2026-05-22 19:43:12,645 - INFO - Transformer training completed
-2026-05-22 19:43:12,646 - INFO - Training started for Fraud Detection
-2026-05-22 19:43:16,646 - INFO - Fraud Detection training completed
-2026-05-22 19:43:16,646 - INFO - Training started for LANL
-2026-05-22 19:43:41,655 - INFO - LANL training completed
-2026-05-22 19:43:41,655 - INFO - All models initialized successfully
-2026-05-22 20:20:44,008 - INFO - FastAPI startup initialized
-2026-05-22 20:20:44,008 - INFO - Checking trained models
-2026-05-22 20:20:44,008 - INFO - Autoencoder model loaded
-2026-05-22 20:20:44,008 - INFO - CNN-LSTM model loaded
-2026-05-22 20:20:44,008 - INFO - Transformer model loaded
-2026-05-22 20:20:44,009 - INFO - Fraud Detection model loaded
-2026-05-22 20:20:44,009 - INFO - LANL model loaded
-2026-05-22 20:20:44,009 - INFO - All models initialized successfully
-2026-05-22 20:24:39,922 - INFO - FastAPI startup initialized
-2026-05-22 20:24:39,923 - INFO - Checking trained models
-2026-05-22 20:24:39,923 - INFO - Autoencoder model loaded
-2026-05-22 20:24:39,923 - INFO - CNN-LSTM model loaded
-2026-05-22 20:24:39,923 - INFO - Transformer model loaded
-2026-05-22 20:24:39,923 - INFO - Fraud Detection model loaded
-2026-05-22 20:24:39,923 - INFO - LANL model loaded
-2026-05-22 20:24:39,923 - INFO - All models initialized successfully
-2026-05-22 20:24:39,923 - INFO - Generating visualization outputs
-2026-05-22 20:24:46,271 - INFO - Output generation error: cannot import name 'run_inference_pipeline' from 'pipelines.inference_pipeline' (/Users/praveenpn/PES/SEM-3/Capstone Project/Coding/pes_capstone/agentic-cybersecurity/backend/pipelines/inference_pipeline.py)
-2026-05-22 20:27:20,348 - INFO - FastAPI startup initialized
-2026-05-22 20:27:20,348 - INFO - Checking trained models
-2026-05-22 20:27:20,348 - INFO - Autoencoder model loaded
-2026-05-22 20:27:20,348 - INFO - CNN-LSTM model loaded
-2026-05-22 20:27:20,348 - INFO - Transformer model loaded
-2026-05-22 20:27:20,348 - INFO - Fraud Detection model loaded
-2026-05-22 20:27:20,348 - INFO - LANL model loaded
-2026-05-22 20:27:20,348 - INFO - All models initialized successfully
-2026-05-22 20:27:20,348 - INFO - Generating visualization outputs
-2026-05-22 20:27:26,428 - INFO - Inference pipeline completed
-2026-05-22 20:27:26,430 - INFO - All outputs generated
-2026-05-22 20:39:03,872 - INFO - FastAPI startup initialized
-2026-05-22 20:39:03,872 - INFO - Checking trained models
-2026-05-22 20:39:03,872 - INFO - Autoencoder model loaded
-2026-05-22 20:39:03,872 - INFO - CNN-LSTM model loaded
-2026-05-22 20:39:03,872 - INFO - Transformer model loaded
-2026-05-22 20:39:03,872 - INFO - Fraud Detection model loaded
-2026-05-22 20:39:03,873 - INFO - LANL model loaded
-2026-05-22 20:39:03,873 - INFO - All models initialized successfully
-2026-05-22 20:39:03,873 - INFO - Generating visualization outputs
-2026-05-22 20:39:10,631 - INFO - Evaluation pipeline error: 'NoneType' object has no attribute 'classes_'
-2026-05-22 20:39:10,631 - INFO - Inference pipeline completed
-2026-05-22 20:39:10,632 - INFO - All outputs generated
-2026-05-22 20:40:38,550 - INFO - FastAPI startup initialized
-2026-05-22 20:40:38,551 - INFO - Checking trained models
-2026-05-22 20:40:38,551 - INFO - Autoencoder model loaded
-2026-05-22 20:40:38,551 - INFO - CNN-LSTM model loaded
-2026-05-22 20:40:38,551 - INFO - Transformer model loaded
-2026-05-22 20:40:38,551 - INFO - Fraud Detection model loaded
-2026-05-22 20:40:38,551 - INFO - LANL model loaded
-2026-05-22 20:40:38,551 - INFO - All models initialized successfully
-2026-05-22 20:40:38,551 - INFO - Generating visualization outputs
-2026-05-22 20:40:45,463 - INFO - Evaluation pipeline completed
-2026-05-22 20:40:45,463 - INFO - Inference pipeline completed
-2026-05-22 20:40:45,465 - INFO - All outputs generated
-2026-05-22 21:03:08,883 - INFO - FastAPI startup initialized
-2026-05-22 21:03:08,883 - INFO - Checking trained models
-2026-05-22 21:03:08,883 - INFO - Autoencoder model loaded
-2026-05-22 21:03:08,883 - INFO - CNN-LSTM model loaded
-2026-05-22 21:03:08,883 - INFO - Transformer model loaded
-2026-05-22 21:03:08,883 - INFO - Fraud Detection model loaded
-2026-05-22 21:03:08,883 - INFO - LANL model loaded
-2026-05-22 21:03:08,883 - INFO - All models initialized successfully
-2026-05-22 21:03:08,883 - INFO - Generating visualization outputs
-2026-05-22 21:03:15,830 - INFO - Evaluation pipeline completed
-2026-05-22 21:03:15,831 - INFO - Inference pipeline completed
-2026-05-22 21:03:15,832 - INFO - All outputs generated
-2026-05-22 21:06:34,818 - INFO - FastAPI startup initialized
-2026-05-22 21:06:34,818 - INFO - Checking trained models
-2026-05-22 21:06:34,818 - INFO - Autoencoder model loaded
-2026-05-22 21:06:34,818 - INFO - CNN-LSTM model loaded
-2026-05-22 21:06:34,818 - INFO - Transformer model loaded
-2026-05-22 21:06:34,819 - INFO - Fraud Detection model loaded
-2026-05-22 21:06:34,819 - INFO - LANL model loaded
-2026-05-22 21:06:34,819 - INFO - All models initialized successfully
-2026-05-22 21:06:34,819 - INFO - Generating visualization outputs
-2026-05-22 21:06:41,987 - INFO - Evaluation pipeline completed
-2026-05-22 21:06:41,987 - INFO - Inference pipeline completed
-2026-05-22 21:06:41,990 - INFO - All outputs generated
-2026-05-22 21:10:06,014 - INFO - FastAPI startup initialized
-2026-05-22 21:10:06,014 - INFO - Checking trained models
-2026-05-22 21:10:06,014 - INFO - Autoencoder model loaded
-2026-05-22 21:10:06,014 - INFO - CNN-LSTM model loaded
-2026-05-22 21:10:06,014 - INFO - Transformer model loaded
-2026-05-22 21:10:06,014 - INFO - Fraud Detection model loaded
-2026-05-22 21:10:06,014 - INFO - LANL model loaded
-2026-05-22 21:10:06,014 - INFO - All models initialized successfully
-2026-05-22 21:10:06,014 - INFO - Generating visualization outputs
-2026-05-22 21:10:13,186 - INFO - Evaluation pipeline completed
-2026-05-22 21:10:13,187 - INFO - Inference pipeline completed
-2026-05-22 21:10:13,188 - INFO - All outputs generated
-2026-05-22 21:10:13,188 - INFO - Models loaded successfully
-2026-05-22 21:10:31,751 - INFO - FastAPI startup initialized
-2026-05-22 21:10:31,751 - INFO - Checking trained models
-2026-05-22 21:10:31,751 - INFO - Autoencoder model loaded
-2026-05-22 21:10:31,751 - INFO - CNN-LSTM model loaded
-2026-05-22 21:10:31,751 - INFO - Transformer model loaded
-2026-05-22 21:10:31,751 - INFO - Fraud Detection model loaded
-2026-05-22 21:10:31,751 - INFO - LANL model loaded
-2026-05-22 21:10:31,751 - INFO - All models initialized successfully
-2026-05-22 21:10:31,751 - INFO - Generating visualization outputs
-2026-05-22 21:10:38,817 - INFO - Evaluation pipeline completed
-2026-05-22 21:10:38,817 - INFO - Inference pipeline completed
-2026-05-22 21:10:38,818 - INFO - All outputs generated
-2026-05-22 21:10:38,818 - INFO - Models loaded successfully
-2026-05-22 22:48:45,131 - INFO - FastAPI startup initialized
-2026-05-22 22:48:45,131 - INFO - Checking trained models
-2026-05-22 22:48:45,131 - INFO - Autoencoder model loaded
-2026-05-22 22:48:45,131 - INFO - CNN-LSTM model loaded
-2026-05-22 22:48:45,131 - INFO - Transformer model loaded
-2026-05-22 22:48:45,131 - INFO - Fraud Detection model loaded
-2026-05-22 22:48:45,131 - INFO - LANL model loaded
-2026-05-22 22:48:45,131 - INFO - All models initialized successfully
-2026-05-22 22:48:45,131 - INFO - Generating visualization outputs
-2026-05-22 22:48:52,176 - INFO - Evaluation pipeline completed
-2026-05-22 22:48:52,177 - INFO - Inference pipeline completed
-2026-05-22 22:48:52,178 - INFO - All outputs generated
-2026-05-22 22:48:52,178 - INFO - Models loaded successfully
-2026-05-22 22:51:00,593 - INFO - FastAPI startup initialized
-2026-05-22 22:51:00,594 - INFO - Checking trained models
-2026-05-22 22:51:00,594 - INFO - Autoencoder model loaded
-2026-05-22 22:51:00,594 - INFO - CNN-LSTM model loaded
-2026-05-22 22:51:00,594 - INFO - Transformer model loaded
-2026-05-22 22:51:00,594 - INFO - Fraud Detection model loaded
-2026-05-22 22:51:00,594 - INFO - LANL model loaded
-2026-05-22 22:51:00,594 - INFO - All models initialized successfully
-2026-05-22 22:51:00,594 - INFO - Generating visualization outputs
-2026-05-22 22:51:07,525 - INFO - Evaluation pipeline completed
-2026-05-22 22:51:07,526 - INFO - Inference pipeline completed
-2026-05-22 22:51:07,527 - INFO - All outputs generated
-2026-05-22 22:51:07,527 - INFO - Models loaded successfully
-2026-05-22 22:53:43,493 - INFO - FastAPI startup initialized
-2026-05-22 22:53:43,493 - INFO - Checking trained models
-2026-05-22 22:53:43,493 - INFO - Autoencoder model loaded
-2026-05-22 22:53:43,493 - INFO - CNN-LSTM model loaded
-2026-05-22 22:53:43,493 - INFO - Transformer model loaded
-2026-05-22 22:53:43,493 - INFO - Fraud Detection model loaded
-2026-05-22 22:53:43,493 - INFO - LANL model loaded
-2026-05-22 22:53:43,493 - INFO - All models initialized successfully
-2026-05-22 22:53:43,493 - INFO - Generating visualization outputs
-2026-05-22 22:53:50,613 - INFO - Evaluation pipeline completed
-2026-05-22 22:53:50,613 - INFO - Inference pipeline completed
-2026-05-22 22:53:50,615 - INFO - All outputs generated
-2026-05-22 22:53:50,615 - INFO - Models loaded successfully
-2026-05-22 23:18:19,161 - INFO - FastAPI startup initialized
-2026-05-22 23:18:19,162 - INFO - Checking trained models
-2026-05-22 23:18:19,162 - INFO - Autoencoder model loaded
-2026-05-22 23:18:19,162 - INFO - CNN-LSTM model loaded
-2026-05-22 23:18:19,162 - INFO - Transformer model loaded
-2026-05-22 23:18:19,162 - INFO - Fraud Detection model loaded
-2026-05-22 23:18:19,162 - INFO - LANL model loaded
-2026-05-22 23:18:19,162 - INFO - All models initialized successfully
-2026-05-22 23:18:19,162 - INFO - Generating visualization outputs
-2026-05-22 23:18:26,149 - INFO - Evaluation pipeline completed
-2026-05-22 23:18:26,150 - INFO - Inference pipeline completed
-2026-05-22 23:18:26,152 - INFO - All outputs generated
-2026-05-22 23:18:26,152 - INFO - Models loaded successfully
-2026-05-22 23:23:18,674 - INFO - FastAPI startup initialized
-2026-05-22 23:23:18,674 - INFO - Checking trained models
-2026-05-22 23:23:18,674 - INFO - Autoencoder model loaded
-2026-05-22 23:23:18,674 - INFO - CNN-LSTM model loaded
-2026-05-22 23:23:18,674 - INFO - Transformer model loaded
-2026-05-22 23:23:18,674 - INFO - Fraud Detection model loaded
-2026-05-22 23:23:18,674 - INFO - LANL model loaded
-2026-05-22 23:23:18,674 - INFO - All models initialized successfully
-2026-05-22 23:23:18,674 - INFO - Generating visualization outputs
-2026-05-22 23:23:25,542 - INFO - Evaluation pipeline completed
-2026-05-22 23:23:25,543 - INFO - Inference pipeline completed
-2026-05-22 23:23:25,544 - INFO - All outputs generated
-2026-05-22 23:23:25,544 - INFO - Models loaded successfully
-2026-05-22 23:24:50,845 - INFO - FastAPI startup initialized
-2026-05-22 23:24:50,845 - INFO - Checking trained models
-2026-05-22 23:24:50,845 - INFO - Autoencoder model loaded
-2026-05-22 23:24:50,845 - INFO - CNN-LSTM model loaded
-2026-05-22 23:24:50,845 - INFO - Transformer model loaded
-2026-05-22 23:24:50,845 - INFO - Fraud Detection model loaded
-2026-05-22 23:24:50,845 - INFO - LANL model loaded
-2026-05-22 23:24:50,845 - INFO - All models initialized successfully
-2026-05-22 23:24:50,845 - INFO - Generating visualization outputs
-2026-05-22 23:24:57,669 - INFO - Evaluation pipeline completed
-2026-05-22 23:24:57,670 - INFO - Inference pipeline completed
-2026-05-22 23:24:57,671 - INFO - All outputs generated
-2026-05-22 23:24:57,671 - INFO - Models loaded successfully
-2026-05-22 23:27:32,384 - INFO - FastAPI startup initialized
-2026-05-22 23:27:32,384 - INFO - Checking trained models
-2026-05-22 23:27:32,384 - INFO - Autoencoder model loaded
-2026-05-22 23:27:32,384 - INFO - CNN-LSTM model loaded
-2026-05-22 23:27:32,384 - INFO - Transformer model loaded
-2026-05-22 23:27:32,384 - INFO - Fraud Detection model loaded
-2026-05-22 23:27:32,384 - INFO - LANL model loaded
-2026-05-22 23:27:32,384 - INFO - All models initialized successfully
-2026-05-22 23:27:32,384 - INFO - Generating visualization outputs
-2026-05-22 23:27:39,922 - INFO - Evaluation pipeline completed
-2026-05-22 23:27:39,922 - INFO - Inference pipeline completed
-2026-05-22 23:27:39,924 - INFO - All outputs generated
-2026-05-22 23:27:39,924 - INFO - Models loaded successfully
-2026-05-22 23:31:31,066 - INFO - FastAPI startup initialized
-2026-05-22 23:31:31,066 - INFO - Checking trained models
-2026-05-22 23:31:31,066 - INFO - Autoencoder model loaded
-2026-05-22 23:31:31,066 - INFO - CNN-LSTM model loaded
-2026-05-22 23:31:31,066 - INFO - Transformer model loaded
-2026-05-22 23:31:31,066 - INFO - Fraud Detection model loaded
-2026-05-22 23:31:31,066 - INFO - LANL model loaded
-2026-05-22 23:31:31,066 - INFO - All models initialized successfully
-2026-05-22 23:31:31,066 - INFO - Generating visualization outputs
-2026-05-22 23:31:38,021 - INFO - Evaluation pipeline completed
-2026-05-22 23:31:38,021 - INFO - Inference pipeline completed
-2026-05-22 23:31:38,023 - INFO - All outputs generated
-2026-05-22 23:31:38,023 - INFO - Models loaded successfully
-2026-05-22 23:39:11,444 - INFO - FastAPI startup initialized
-2026-05-22 23:39:11,444 - INFO - Checking trained models
-2026-05-22 23:39:11,444 - INFO - Autoencoder model loaded
-2026-05-22 23:39:11,444 - INFO - CNN-LSTM model loaded
-2026-05-22 23:39:11,444 - INFO - Transformer model loaded
-2026-05-22 23:39:11,444 - INFO - Fraud Detection model loaded
-2026-05-22 23:39:11,445 - INFO - LANL model loaded
-2026-05-22 23:39:11,445 - INFO - All models initialized successfully
-2026-05-22 23:39:11,445 - INFO - Generating visualization outputs
-2026-05-22 23:39:18,180 - INFO - Evaluation pipeline completed
-2026-05-22 23:39:18,181 - INFO - Inference pipeline completed
-2026-05-22 23:39:18,182 - INFO - All outputs generated
-2026-05-22 23:39:18,182 - INFO - Models loaded successfully
-2026-05-22 23:45:32,315 - INFO - FastAPI startup initialized
-2026-05-22 23:45:32,315 - INFO - Checking trained models
-2026-05-22 23:45:32,315 - INFO - Autoencoder model loaded
-2026-05-22 23:45:32,315 - INFO - CNN-LSTM model loaded
-2026-05-22 23:45:32,315 - INFO - Transformer model loaded
-2026-05-22 23:45:32,315 - INFO - Fraud Detection model loaded
-2026-05-22 23:45:32,315 - INFO - LANL model loaded
-2026-05-22 23:45:32,315 - INFO - All models initialized successfully
-2026-05-22 23:45:32,315 - INFO - Generating visualization outputs
-2026-05-22 23:45:38,911 - INFO - Evaluation pipeline completed
-2026-05-22 23:45:38,912 - INFO - Inference pipeline completed
-2026-05-22 23:45:38,913 - INFO - All outputs generated
-2026-05-22 23:45:38,913 - INFO - Models loaded successfully
-2026-06-15 23:25:28,497 - INFO - FastAPI startup initialized
-2026-06-15 23:25:28,498 - INFO - Checking trained models
-2026-06-15 23:25:28,498 - INFO - Autoencoder model loaded
-2026-06-15 23:25:28,498 - INFO - CNN-LSTM model loaded
-2026-06-15 23:25:28,498 - INFO - Transformer model loaded
-2026-06-15 23:25:28,498 - INFO - Fraud Detection model loaded
-2026-06-15 23:25:28,498 - INFO - LANL model loaded
-2026-06-15 23:25:28,498 - INFO - All models initialized successfully
-2026-06-15 23:25:28,498 - INFO - Generating visualization outputs
-2026-06-15 23:25:38,756 - INFO - Evaluation pipeline completed
-2026-06-15 23:25:38,758 - INFO - Inference pipeline completed
-2026-06-15 23:25:38,760 - INFO - All outputs generated
-2026-06-15 23:25:38,760 - INFO - Models loaded successfully
-2026-06-15 23:51:00,012 - INFO - Checking trained models
-2026-06-15 23:51:00,012 - INFO - Autoencoder model loaded
-2026-06-15 23:51:00,012 - INFO - CNN-LSTM model loaded
-2026-06-15 23:51:00,012 - INFO - Transformer model loaded
-2026-06-15 23:51:00,012 - INFO - Fraud Detection model loaded
-2026-06-15 23:51:00,012 - INFO - LANL model loaded
-2026-06-15 23:51:00,012 - INFO - All models initialized successfully
-2026-06-15 23:51:00,012 - INFO - Generating visualization outputs
-2026-06-15 23:51:06,738 - INFO - Evaluation pipeline completed
-2026-06-15 23:51:06,739 - INFO - Inference pipeline completed
-2026-06-15 23:51:06,740 - INFO - All outputs generated
-2026-06-15 23:51:06,740 - INFO - FastAPI startup initialized
-2026-06-15 23:51:06,740 - INFO - Checking trained models
-2026-06-15 23:51:06,740 - INFO - Autoencoder model loaded
-2026-06-15 23:51:06,740 - INFO - CNN-LSTM model loaded
-2026-06-15 23:51:06,740 - INFO - Transformer model loaded
-2026-06-15 23:51:06,740 - INFO - Fraud Detection model loaded
-2026-06-15 23:51:06,740 - INFO - LANL model loaded
-2026-06-15 23:51:06,740 - INFO - All models initialized successfully
-2026-06-15 23:51:06,740 - INFO - Generating visualization outputs
-2026-06-15 23:51:12,065 - INFO - Evaluation pipeline completed
-2026-06-15 23:51:12,065 - INFO - Inference pipeline completed
-2026-06-15 23:51:12,067 - INFO - All outputs generated
-2026-06-15 23:51:12,067 - INFO - Models loaded successfully
+2026-06-26 20:44:04,206 - INFO - Checking trained models
+2026-06-26 20:44:04,206 - INFO - Training started for Autoencoder
+2026-06-26 20:44:35,204 - INFO - Autoencoder training completed
+2026-06-26 20:44:35,204 - INFO - Training started for CNN-LSTM
+2026-06-26 20:44:56,092 - INFO - CNN-LSTM error: The least populated class in y has only 1 member, which is too few. The minimum number of groups for any class cannot be less than 2.
+2026-06-26 20:44:56,092 - INFO - Training started for Transformer
+2026-06-26 20:45:16,902 - INFO - Transformer error: The least populated class in y has only 1 member, which is too few. The minimum number of groups for any class cannot be less than 2.
+2026-06-26 20:45:16,904 - INFO - Training started for Fraud Detection
+2026-06-26 20:45:24,421 - INFO - Fraud Detection training completed
+2026-06-26 20:45:24,421 - INFO - Training started for LANL
+2026-06-26 20:45:49,730 - INFO - LANL training completed
+2026-06-26 20:45:49,730 - INFO - All models initialized successfully
+2026-06-26 20:45:49,730 - INFO - Generating visualization outputs
+2026-06-26 20:45:53,306 - INFO - Evaluation pipeline completed
+2026-06-26 20:45:53,306 - INFO - Inference pipeline completed
+2026-06-26 20:45:53,308 - INFO - All outputs generated
+2026-06-26 20:45:53,308 - INFO - FastAPI startup initialized
+2026-06-26 20:45:53,308 - INFO - Checking trained models
+2026-06-26 20:45:53,308 - INFO - Autoencoder model loaded
+2026-06-26 20:45:53,308 - INFO - Training started for CNN-LSTM
+2026-06-26 20:46:14,794 - INFO - CNN-LSTM error: The least populated class in y has only 1 member, which is too few. The minimum number of groups for any class cannot be less than 2.
+2026-06-26 20:46:14,796 - INFO - Training started for Transformer
+2026-06-26 20:46:35,730 - INFO - Transformer error: The least populated class in y has only 1 member, which is too few. The minimum number of groups for any class cannot be less than 2.
+2026-06-26 20:46:35,732 - INFO - Fraud Detection model loaded
+2026-06-26 20:46:35,732 - INFO - LANL model loaded
+2026-06-26 20:46:35,732 - INFO - All models initialized successfully
+2026-06-26 20:46:35,732 - INFO - Generating visualization outputs
+2026-06-26 20:46:39,107 - INFO - Evaluation pipeline completed
+2026-06-26 20:46:39,107 - INFO - Inference pipeline completed
+2026-06-26 20:46:39,108 - INFO - All outputs generated
+2026-06-26 20:46:39,108 - INFO - Models loaded successfully

@@ -1,17 +1,27 @@
 import os
+import joblib
 import numpy as np
 import matplotlib
 
-matplotlib.use('Agg')
+matplotlib.use("Agg")
 
 import matplotlib.pyplot as plt
 
-from utils.plot_style import (
-    apply_plot_style
-)
+from lime.lime_tabular import LimeTabularExplainer
+
+from utils.plot_style import apply_plot_style
 
 
-def generate_lime_plot():
+def generate_lime_plot(
+    model,
+    X_train,
+    X_sample,
+    model_name="fraud_detection",
+    output_dir="outputs/explainability/lime"
+):
+    """
+    Generate LIME explanation using real feature names.
+    """
 
     print("=" * 60)
     print("GENERATING LIME EXPLANATION")
@@ -19,340 +29,158 @@ def generate_lime_plot():
 
     try:
 
-        # =====================================
-        # APPLY GLOBAL STYLE
-        # =====================================
-
         apply_plot_style()
 
-        # =====================================
-        # OUTPUT DIRECTORY
-        # =====================================
-
-        output_dir = (
-            'outputs/explainability/lime'
-        )
-
         os.makedirs(
-
             output_dir,
-
             exist_ok=True
         )
 
-        # =====================================
-        # GENERATE RANDOM IMPORTANCE
-        # =====================================
+        # ---------------------------------
+        # Load saved feature names
+        # ---------------------------------
 
-        x = np.arange(10)
-
-        y = np.random.uniform(
-            0,
-            1,
-            10
+        feature_path = (
+            f"outputs/trained_models/"
+            f"{model_name}/feature_names.pkl"
         )
 
-        feature_names = [
+        if os.path.exists(feature_path):
+            feature_names = joblib.load(feature_path)
+        else:
+            feature_names = [
+                f"Feature_{i}"
+                for i in range(X_train.shape[1])
+            ]
 
-            f'Feature_{i}'
+        # ---------------------------------
+        # Build LIME explainer
+        # ---------------------------------
 
-            for i in range(10)
-        ]
+        explainer = LimeTabularExplainer(
+            training_data=np.asarray(X_train),
+            feature_names=feature_names,
+            class_names=["Normal", "Attack"],
+            mode="classification"
+        )
 
-        # =====================================
-        # SORT VALUES
-        # =====================================
+        explanation = explainer.explain_instance(
+            np.asarray(X_sample),
+            model.predict_proba,
+            num_features=min(10, len(feature_names))
+        )
 
-        sorted_indices = np.argsort(y)
+        explanation_list = explanation.as_list()
 
-        sorted_scores = y[
-            sorted_indices
-        ]
+        features = [x[0] for x in explanation_list]
+        scores = [abs(x[1]) for x in explanation_list]
 
-        sorted_features = np.array(
-            feature_names
-        )[sorted_indices]
+        order = np.argsort(scores)
 
-        # =====================================
-        # BAR CHART
-        # =====================================
+        features = np.array(features)[order]
+        scores = np.array(scores)[order]
+
+        # ---------------------------------
+        # Bar Chart
+        # ---------------------------------
 
         apply_plot_style()
 
         plt.figure(figsize=(12, 6))
-
-        plt.bar(
-            sorted_features,
-            sorted_scores
-        )
-
-        plt.title(
-            "LIME Feature Importance"
-        )
-
-        plt.xlabel(
-            "Features"
-        )
-
-        plt.ylabel(
-            "Importance Score"
-        )
-
-        plt.xticks(
-            rotation=45
-        )
-
-        plt.grid(axis='y')
-
+        plt.barh(features, scores)
+        plt.xlabel("Importance")
+        plt.title("LIME Feature Importance")
         plt.tight_layout()
 
-        save_path = os.path.join(
-
-            output_dir,
-
-            'lime_explanation.png'
-        )
-
         plt.savefig(
-
-            save_path,
-
+            os.path.join(output_dir, "lime_explanation.png"),
             dpi=300,
-
-            bbox_inches='tight'
+            bbox_inches="tight"
         )
-
         plt.close()
 
-        print(
-            "LIME explanation saved"
-        )
-
-        # =====================================
-        # LINE VISUALIZATION
-        # =====================================
-
-        apply_plot_style()
+        # ---------------------------------
+        # Trend
+        # ---------------------------------
 
         plt.figure(figsize=(10, 5))
-
         plt.plot(
-            x,
-            y,
-            marker='o'
+            range(len(scores)),
+            scores,
+            marker="o"
         )
-
-        plt.title(
-            "LIME Trend Visualization"
+        plt.xticks(
+            range(len(features)),
+            features,
+            rotation=45,
+            ha="right"
         )
-
-        plt.xlabel(
-            "Feature Index"
-        )
-
-        plt.ylabel(
-            "LIME Weight"
-        )
-
-        plt.grid(True)
-
         plt.tight_layout()
-
-        line_path = os.path.join(
-
-            output_dir,
-
-            'lime_trend.png'
-        )
-
         plt.savefig(
-
-            line_path,
-
+            os.path.join(output_dir, "lime_trend.png"),
             dpi=300,
-
-            bbox_inches='tight'
+            bbox_inches="tight"
         )
-
         plt.close()
 
-        print(
-            "LIME trend visualization saved"
-        )
-
-        # =====================================
-        # PIE CHART
-        # =====================================
-
-        apply_plot_style()
+        # ---------------------------------
+        # Pie
+        # ---------------------------------
 
         plt.figure(figsize=(8, 8))
-
         plt.pie(
-
-            sorted_scores,
-
-            labels=sorted_features,
-
-            autopct='%1.1f%%'
+            scores,
+            labels=features,
+            autopct="%1.1f%%"
         )
-
-        plt.title(
-            'LIME Feature Contribution'
-        )
-
-        pie_path = os.path.join(
-
-            output_dir,
-
-            'lime_pie.png'
-        )
-
+        plt.tight_layout()
         plt.savefig(
-
-            pie_path,
-
+            os.path.join(output_dir, "lime_pie.png"),
             dpi=300,
-
-            bbox_inches='tight'
+            bbox_inches="tight"
         )
-
         plt.close()
 
-        print(
-            "LIME pie chart saved"
-        )
-
-        # =====================================
-        # AREA CHART
-        # =====================================
-
-        apply_plot_style()
+        # ---------------------------------
+        # Area
+        # ---------------------------------
 
         plt.figure(figsize=(12, 6))
-
         plt.fill_between(
-
-            range(len(sorted_scores)),
-
-            sorted_scores,
-
+            range(len(scores)),
+            scores,
             alpha=0.4
         )
-
-        plt.plot(
-
-            sorted_scores,
-
-            marker='o'
-        )
-
+        plt.plot(scores, marker="o")
         plt.xticks(
-
-            range(len(sorted_features)),
-
-            sorted_features,
-
-            rotation=45
+            range(len(features)),
+            features,
+            rotation=45,
+            ha="right"
         )
-
-        plt.xlabel(
-            'Features'
-        )
-
-        plt.ylabel(
-            'Importance Score'
-        )
-
-        plt.title(
-            'LIME Feature Coverage'
-        )
-
-        plt.grid(True)
-
         plt.tight_layout()
-
-        area_path = os.path.join(
-
-            output_dir,
-
-            'lime_area.png'
-        )
-
         plt.savefig(
-
-            area_path,
-
+            os.path.join(output_dir, "lime_area.png"),
             dpi=300,
-
-            bbox_inches='tight'
+            bbox_inches="tight"
         )
-
         plt.close()
 
-        print(
-            "LIME area chart saved"
-        )
-
-        # =====================================
-        # HISTOGRAM
-        # =====================================
-
-        apply_plot_style()
+        # ---------------------------------
+        # Histogram
+        # ---------------------------------
 
         plt.figure(figsize=(10, 5))
-
-        plt.hist(
-
-            sorted_scores,
-
-            bins=10
-        )
-
-        plt.title(
-            'LIME Score Distribution'
-        )
-
-        plt.xlabel(
-            'Importance Score'
-        )
-
-        plt.ylabel(
-            'Frequency'
-        )
-
-        plt.grid(True)
-
+        plt.hist(scores, bins=min(10, len(scores)))
         plt.tight_layout()
-
-        histogram_path = os.path.join(
-
-            output_dir,
-
-            'lime_histogram.png'
-        )
-
         plt.savefig(
-
-            histogram_path,
-
+            os.path.join(output_dir, "lime_histogram.png"),
             dpi=300,
-
-            bbox_inches='tight'
+            bbox_inches="tight"
         )
-
         plt.close()
 
-        print(
-            "LIME histogram saved"
-        )
-
-        print("=" * 60)
-        print("LIME EXPLANATION COMPLETED")
-        print("=" * 60)
+        print("LIME explanation generated successfully.")
 
     except Exception as e:
-
-        print(
-            f"LIME generation error: {e}"
-        )
+        print(f"LIME generation error: {e}")
