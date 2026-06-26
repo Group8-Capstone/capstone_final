@@ -1,227 +1,406 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState } from "react";
 
 function StreamingMonitor() {
 
-  const [alerts, setAlerts] = useState([])
+  const [alerts, setAlerts] = useState([]);
 
-  const [connectionStatus, setConnectionStatus] =
-    useState('Connecting...')
+  const [connectionStatus, setConnectionStatus] = useState("Connecting...");
+
+  const WS_URL =
+    import.meta.env.VITE_WS_URL ||
+    `ws://${window.location.hostname}:8000/ws`;
 
   useEffect(() => {
 
-    const socket = new WebSocket(
-      'ws://127.0.0.1:8000/ws'
-    )
+    let socket;
 
-    // =====================================
-    // CONNECTION OPEN
-    // =====================================
+    const connect = () => {
 
-    socket.onopen = () => {
+      socket = new WebSocket(WS_URL);
 
-      console.log(
-        'WebSocket Connected'
-      )
+      socket.onopen = () => {
 
-      setConnectionStatus(
-        'Connected'
-      )
-    }
+        console.log("WebSocket Connected");
 
-    // =====================================
-    // RECEIVE ALERTS
-    // =====================================
+        setConnectionStatus("Connected");
 
-    socket.onmessage = (event) => {
+        socket.send(
+          JSON.stringify({
+            type: "CLIENT_CONNECTED"
+          })
+        );
 
-      console.log(
-        'Received:',
-        event.data
-      )
+      };
 
-      const data = JSON.parse(
-        event.data
-      )
+      socket.onmessage = (event) => {
 
-      setAlerts((prevAlerts) => [
+        try {
 
-        data,
+          const data = JSON.parse(event.data);
 
-        ...prevAlerts
-      ])
-    }
+          setAlerts(prev => [
 
-    // =====================================
-    // ERROR
-    // =====================================
+            {
 
-    socket.onerror = (error) => {
+              ...data,
 
-      console.log(
-        'WebSocket Error:',
-        error
-      )
+              timestamp: new Date().toLocaleTimeString()
 
-      setConnectionStatus(
-        'Connection Error'
-      )
-    }
+            },
 
-    // =====================================
-    // CLOSE
-    // =====================================
+            ...prev.slice(0, 19)
 
-    socket.onclose = () => {
+          ]);
 
-      console.log(
-        'WebSocket Closed'
-      )
+        }
 
-      setConnectionStatus(
-        'Disconnected'
-      )
-    }
+        catch (err) {
 
-    // =====================================
-    // CLEANUP
-    // =====================================
+          console.error(err);
+
+        }
+
+      };
+
+      socket.onerror = (err) => {
+
+        console.error(err);
+
+        setConnectionStatus("Connection Error");
+
+      };
+
+      socket.onclose = () => {
+
+        console.log("Socket Closed");
+
+        setConnectionStatus("Disconnected");
+
+        setTimeout(connect, 3000);
+
+      };
+
+    };
+
+    connect();
 
     return () => {
 
-      socket.close()
+      if (socket) {
+
+        socket.onclose = null;
+
+        socket.close();
+
+      }
+
+    };
+
+  }, [WS_URL]);
+
+  const getAlertColor = (type) => {
+
+    switch (type) {
+
+      case "SECURITY_ALERT":
+        return "#991b1b";
+
+      case "FRAUD_ALERT":
+        return "#92400e";
+
+      case "UEBA_ALERT":
+        return "#1e40af";
+
+      case "ANOMALY_ALERT":
+        return "#7c3aed";
+
+      case "PORTSCAN_ALERT":
+        return "#0f766e";
+
+      case "MALWARE_ALERT":
+        return "#7f1d1d";
+
+      default:
+        return "#1e293b";
+
     }
 
-  }, [])
+  };
+
+  const getAlertIcon = (type) => {
+
+    switch (type) {
+
+      case "SECURITY_ALERT":
+        return "🚨";
+
+      case "FRAUD_ALERT":
+        return "💳";
+
+      case "UEBA_ALERT":
+        return "👤";
+
+      case "ANOMALY_ALERT":
+        return "⚠️";
+
+      case "PORTSCAN_ALERT":
+        return "🌐";
+
+      case "MALWARE_ALERT":
+        return "🦠";
+
+      default:
+        return "📢";
+
+    }
+
+  };
 
   return (
 
     <div>
 
-      <h1>
-        Real-Time Security Alerts
-      </h1>
-
-      {/* ============================== */}
-      {/* CONNECTION STATUS */}
-      {/* ============================== */}
+      <h1>Real-Time Security Alerts</h1>
 
       <div
-
         style={{
-
-          marginBottom: '20px',
-
-          padding: '10px',
-
-          background: '#1e293b',
-
-          borderRadius: '8px',
-
-          border: '1px solid #00ffcc'
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          marginBottom: 20
         }}
       >
 
-        <strong>
-          WebSocket Status:
-        </strong>
+        <div
+          style={{
+            padding: "12px",
+            borderRadius: "8px",
+            background:
+              connectionStatus === "Connected"
+                ? "#14532d"
+                : "#7f1d1d",
+            color: "white",
+            fontWeight: "bold"
+          }}
+        >
+          WebSocket : {connectionStatus}
+        </div>
 
-        {' '}
+        <button
 
-        {connectionStatus}
+          onClick={() => setAlerts([])}
+
+          style={{
+            padding: "10px 18px",
+            border: "none",
+            borderRadius: "8px",
+            cursor: "pointer"
+          }}
+
+        >
+          Clear Alerts
+        </button>
 
       </div>
 
-      {/* ============================== */}
-      {/* NO ALERTS */}
-      {/* ============================== */}
+      <h2>
+
+        Security Alerts ({alerts.length})
+
+      </h2>
 
       {
 
-        alerts.length === 0 ? (
+        alerts.length === 0 &&
+
+        (
 
           <div
 
             style={{
 
-              padding: '20px',
+              padding: 20,
 
-              background: '#111827',
+              background: "#111827",
 
-              borderRadius: '10px',
+              borderRadius: 10,
 
-              border:
-                '1px solid #334155'
+              border: "1px solid #334155"
+
             }}
+
           >
 
             Waiting for security alerts...
 
           </div>
 
-        ) : (
-
-          alerts.map((alert, index) => (
-
-            <div
-
-              key={index}
-
-              className="alert-box"
-
-              style={{
-
-                background:
-
-                  alert.severity === 'CRITICAL'
-
-                    ? '#7f1d1d'
-
-                    : alert.severity === 'HIGH'
-
-                    ? '#991b1b'
-
-                    : '#1e293b',
-
-                padding: '15px',
-
-                marginBottom: '15px',
-
-                borderRadius: '10px',
-
-                border:
-                  '1px solid #00ffcc'
-              }}
-            >
-
-              <h3>
-
-                {alert.type}
-
-              </h3>
-
-              <p>
-
-                {alert.message}
-
-              </p>
-
-              <strong>
-
-                Severity:
-
-              </strong>
-
-              {' '}
-
-              {alert.severity}
-
-            </div>
-          ))
         )
+
+      }
+
+      {
+
+        alerts.map((alert, index) => (
+
+          <div
+
+            key={index}
+
+            style={{
+
+              background: getAlertColor(alert.type),
+
+              padding: 20,
+
+              marginBottom: 20,
+
+              borderRadius: 10,
+
+              border: "1px solid #00ffcc"
+
+            }}
+
+          >
+
+            <h3>
+
+              {getAlertIcon(alert.type)}{" "}
+
+              {alert.type || "UNKNOWN"}
+
+            </h3>
+
+            <p>
+
+              {alert.message || "No message"}
+
+            </p>
+
+            {
+
+              alert.attack_type &&
+
+              (
+
+                <p>
+
+                  <strong>Attack :</strong>{" "}
+
+                  {alert.attack_type}
+
+                </p>
+
+              )
+
+            }
+
+            {
+
+              alert.severity &&
+
+              (
+
+                <p>
+
+                  <strong>Severity :</strong>{" "}
+
+                  {alert.severity}
+
+                </p>
+
+              )
+
+            }
+
+            {
+
+              alert.score !== undefined &&
+
+              (
+
+                <p>
+
+                  <strong>Confidence :</strong>{" "}
+
+                  {(alert.score * 100).toFixed(2)}%
+
+                </p>
+
+              )
+
+            }
+
+            {
+
+              alert.records_analyzed &&
+
+              (
+
+                <p>
+
+                  <strong>Records :</strong>{" "}
+
+                  {alert.records_analyzed}
+
+                </p>
+
+              )
+
+            }
+
+            {
+
+              alert.source_ip &&
+
+              (
+
+                <p>
+
+                  <strong>Source IP :</strong>{" "}
+
+                  {alert.source_ip}
+
+                </p>
+
+              )
+
+            }
+
+            {
+
+              alert.destination_ip &&
+
+              (
+
+                <p>
+
+                  <strong>Destination IP :</strong>{" "}
+
+                  {alert.destination_ip}
+
+                </p>
+
+              )
+
+            }
+
+            <small>
+
+              {alert.timestamp}
+
+            </small>
+
+          </div>
+
+        ))
+
       }
 
     </div>
-  )
+
+  );
+
 }
 
-export default StreamingMonitor
+export default StreamingMonitor;

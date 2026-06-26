@@ -1,38 +1,36 @@
+import React, { Suspense } from "react";
+
 import {
-
-  BrowserRouter,
-
-  Routes,
-
-  Route
-
-} from 'react-router-dom'
+    BrowserRouter,
+    Routes,
+    Route
+} from "react-router-dom";
 
 /* =====================================
    COMPONENTS
 ===================================== */
 
-import Sidebar from './components/Sidebar'
+import Sidebar from "./components/Sidebar";
 
 /* =====================================
    PAGES
 ===================================== */
 
-import Dashboard from './pages/Dashboard'
+import Dashboard from "./pages/Dashboard";
 
-import StreamingMonitor from './pages/StreamingMonitor'
+import StreamingMonitor from "./pages/StreamingMonitor";
 
-import IntrusionDetection from './pages/IntrusionDetection'
+import IntrusionDetection from "./pages/IntrusionDetection";
 
-import FraudDetection from './pages/FraudDetection'
+import FraudDetection from "./pages/FraudDetection";
 
-import Investigation from './pages/Investigation'
+import Investigation from "./pages/Investigation";
 
-import IncidentResponse from './pages/IncidentResponse'
+import IncidentResponse from "./pages/IncidentResponse";
 
-import Explainability from './pages/Explainability'
+import Explainability from "./pages/Explainability";
 
-import UEBA from './pages/UEBA'
+import UEBA from "./pages/UEBA";
 
 /* =====================================
    APP
@@ -40,122 +38,173 @@ import UEBA from './pages/UEBA'
 
 function App() {
 
-  return (
+    return (
 
-    <BrowserRouter>
+        <BrowserRouter
 
-      <div className="app-layout">
+            future={{
 
-        {/* ========================= */}
-        {/* SIDEBAR */}
-        {/* ========================= */}
+                v7_startTransition: true,
 
-        <Sidebar />
+                v7_relativeSplatPath: true
 
-        {/* ========================= */}
-        {/* MAIN CONTENT */}
-        {/* ========================= */}
+            }}
 
-        <div className="main-content">
+        >
 
-          <Routes>
+            <div className="app-layout">
 
-            {/* ===================== */}
-            {/* DASHBOARD */}
-            {/* ===================== */}
+                {/* ========================= */}
+                {/* SIDEBAR */}
+                {/* ========================= */}
 
-            <Route
+                <Sidebar />
 
-              path="/"
+                {/* ========================= */}
+                {/* MAIN CONTENT */}
+                {/* ========================= */}
 
-              element={<Dashboard />}
-            />
+                <main className="main-content">
 
-            {/* ===================== */}
-            {/* STREAMING */}
-            {/* ===================== */}
+                    <Suspense
 
-            <Route
+                        fallback={
 
-              path="/streaming"
+                            <div
+                                style={{
+                                    color: "white",
+                                    padding: "30px",
+                                    textAlign: "center"
+                                }}
+                            >
 
-              element={<StreamingMonitor />}
-            />
+                                Loading...
 
-            {/* ===================== */}
-            {/* INTRUSION DETECTION */}
-            {/* ===================== */}
+                            </div>
 
-            <Route
+                        }
 
-              path="/intrusion"
+                    >
 
-              element={<IntrusionDetection />}
-            />
+                        <Routes>
 
-            {/* ===================== */}
-            {/* FRAUD DETECTION */}
-            {/* ===================== */}
+                            {/* Dashboard */}
 
-            <Route
+                            <Route
 
-              path="/fraud"
+                                path="/"
 
-              element={<FraudDetection />}
-            />
+                                element={<Dashboard />}
 
-            {/* ===================== */}
-            {/* INVESTIGATION */}
-            {/* ===================== */}
+                            />
 
-            <Route
+                            {/* Streaming */}
 
-              path="/investigation"
+                            <Route
 
-              element={<Investigation />}
-            />
+                                path="/streaming"
 
-            {/* ===================== */}
-            {/* INCIDENT RESPONSE */}
-            {/* ===================== */}
+                                element={<StreamingMonitor />}
 
-            <Route
+                            />
 
-              path="/response"
+                            {/* Intrusion */}
 
-              element={<IncidentResponse />}
-            />
+                            <Route
 
-            {/* ===================== */}
-            {/* EXPLAINABILITY */}
-            {/* ===================== */}
+                                path="/intrusion"
 
-            <Route
+                                element={<IntrusionDetection />}
 
-              path="/explainability"
+                            />
 
-              element={<Explainability />}
-            />
+                            {/* Fraud */}
 
-            {/* ===================== */}
-            {/* UEBA */}
-            {/* ===================== */}
+                            <Route
 
-            <Route
+                                path="/fraud"
 
-              path="/ueba"
+                                element={<FraudDetection />}
 
-              element={<UEBA />}
-            />
+                            />
 
-          </Routes>
+                            {/* Investigation */}
 
-        </div>
+                            <Route
 
-      </div>
+                                path="/investigation"
 
-    </BrowserRouter>
-  )
+                                element={<Investigation />}
+
+                            />
+
+                            {/* Incident Response */}
+
+                            <Route
+
+                                path="/response"
+
+                                element={<IncidentResponse />}
+
+                            />
+
+                            {/* Explainability */}
+
+                            <Route
+
+                                path="/explainability"
+
+                                element={<Explainability />}
+
+                            />
+
+                            {/* UEBA */}
+
+                            <Route
+
+                                path="/ueba"
+
+                                element={<UEBA />}
+
+                            />
+
+                            {/* 404 */}
+
+                            <Route
+
+                                path="*"
+
+                                element={
+
+                                    <div
+                                        style={{
+                                            color: "white",
+                                            padding: "50px",
+                                            textAlign: "center",
+                                            fontSize: "24px"
+                                        }}
+                                    >
+
+                                        404 - Page Not Found
+
+                                    </div>
+
+                                }
+
+                            />
+
+                        </Routes>
+
+                    </Suspense>
+
+                </main>
+
+            </div>
+
+        </BrowserRouter>
+
+    );
+
 }
 
-export default App
+export default App;

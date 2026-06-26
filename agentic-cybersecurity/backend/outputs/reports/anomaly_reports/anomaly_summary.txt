@@ -4,7 +4,7 @@ AUTOENCODER ANOMALY REPORT
 Total Records: 100
 Total Anomalies: 0
 Total Normal: 100
-Threshold: 1.103468
-Maximum Score: 0.998436
-Minimum Score: 0.003934
-Average Score: 0.495490
+Threshold: 1.110013
+Maximum Score: 0.995546
+Minimum Score: 0.008927
+Average Score: 0.496130

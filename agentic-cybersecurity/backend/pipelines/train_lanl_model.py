@@ -1,3 +1,5 @@
+import os
+import json
 import joblib
 
 from sklearn.ensemble import IsolationForest
@@ -13,8 +15,13 @@ def train_lanl_model():
     print("TRAINING LANL UEBA MODEL")
     print("=" * 60)
 
+    os.makedirs(
+        "outputs/trained_models/lanl",
+        exist_ok=True
+    )
+
     dataset_path = (
-        'datasets/lanl/auth.txt'
+        "datasets/lanl/auth.txt"
     )
 
     # =====================================
@@ -44,7 +51,7 @@ def train_lanl_model():
     )
 
     # =====================================
-    # USE FULL DATASET
+    # TRAIN DATA
     # =====================================
 
     X = df.values
@@ -69,17 +76,82 @@ def train_lanl_model():
     print("LANL model trained")
 
     # =====================================
+    # PREDICTIONS
+    # =====================================
+
+    predictions = model.predict(X)
+
+    total_records = len(predictions)
+
+    anomalies_detected = int(
+        (predictions == -1).sum()
+    )
+
+    normal_records = int(
+        (predictions == 1).sum()
+    )
+
+    anomaly_percentage = round(
+        (anomalies_detected / total_records) * 100,
+        2
+    )
+
+    # =====================================
+    # METRICS
+    # =====================================
+
+    metrics = {
+
+        "model": "LANL UEBA",
+
+        "algorithm": "Isolation Forest",
+
+        "total_records": total_records,
+
+        "anomalies_detected": anomalies_detected,
+
+        "normal_records": normal_records,
+
+        "anomaly_percentage": anomaly_percentage,
+
+        "unique_users": int(
+            df.iloc[:, 0].nunique()
+        ),
+
+        "unique_computers": int(
+            df.iloc[:, 1].nunique()
+        )
+    }
+
+    metrics_path = (
+        "outputs/trained_models/"
+        "lanl/metrics.json"
+    )
+
+    with open(
+        metrics_path,
+        "w"
+    ) as f:
+        json.dump(
+            metrics,
+            f,
+            indent=4
+        )
+
+    print("Metrics saved successfully.")
+
+    # =====================================
     # SAVE MODEL
     # =====================================
 
     model_path = (
-        'outputs/trained_models/'
-        'lanl/lanl_model.pkl'
+        "outputs/trained_models/"
+        "lanl/lanl_model.pkl"
     )
 
     feature_path = (
-        'outputs/trained_models/'
-        'lanl/feature_names.pkl'
+        "outputs/trained_models/"
+        "lanl/feature_names.pkl"
     )
 
     joblib.dump(
@@ -102,6 +174,10 @@ def train_lanl_model():
 
     print(
         f"Feature Names Saved At: {feature_path}"
+    )
+
+    print(
+        f"Metrics Saved At: {metrics_path}"
     )
 
 

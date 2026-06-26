@@ -1,3 +1,5 @@
+import os
+import json
 import joblib
 import xgboost as xgb
 
@@ -70,11 +72,20 @@ class FraudDetectionModel:
 
         accuracy = accuracy_score(y_test, predictions)
 
-        print(classification_report(
+        report = classification_report(
             y_test,
             predictions,
+            output_dict=True,
             zero_division=0
-        ))
+        )
+
+        print(
+            classification_report(
+                y_test,
+                predictions,
+                zero_division=0
+            )
+        )
 
         save_classification_report(
             y_test,
@@ -112,10 +123,11 @@ class FraudDetectionModel:
 
         try:
             generate_lime_plot(
-                self.model,
-                X_train,
-                X_test[0],
-                "fraud_detection"
+                model=self.model,
+                X_train=X_train,
+                X_sample=X_test[0],
+                feature_names=feature_names,
+                model_name="fraud_detection"
             )
         except Exception as e:
             print(e)
@@ -139,6 +151,30 @@ class FraudDetectionModel:
             )
         except Exception as e:
             print(e)
+
+        # ==========================================
+        # Save Metrics
+        # ==========================================
+
+        os.makedirs(
+            "outputs/trained_models/fraud_detection",
+            exist_ok=True
+        )
+
+        metrics = {
+            "accuracy": round(float(accuracy) * 100, 2),
+            "precision": round(float(report["weighted avg"]["precision"]) * 100, 2),
+            "recall": round(float(report["weighted avg"]["recall"]) * 100, 2),
+            "f1_score": round(float(report["weighted avg"]["f1-score"]) * 100, 2)
+        }
+
+        with open(
+            "outputs/trained_models/fraud_detection/metrics.json",
+            "w"
+        ) as f:
+            json.dump(metrics, f, indent=4)
+
+        print("Fraud metrics saved successfully.")
 
         model_path = "outputs/trained_models/fraud_detection/fraud_model.pkl"
         scaler_path = "outputs/trained_models/fraud_detection/scaler.pkl"

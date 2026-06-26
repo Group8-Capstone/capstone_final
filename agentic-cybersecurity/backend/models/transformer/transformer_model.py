@@ -1,19 +1,14 @@
-from tensorflow.keras.models import (
-    Sequential
-)
-
+from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import (
+    Input,
     Dense,
     Dropout,
     BatchNormalization
 )
-
-from tensorflow.keras.optimizers import (
-    Adam
-)
+from tensorflow.keras.optimizers import Adam
 
 
-def build_transformer(input_shape):
+def build_transformer(input_shape, num_classes):
 
     print("=" * 60)
     print("BUILDING TRANSFORMER MODEL")
@@ -22,49 +17,59 @@ def build_transformer(input_shape):
     model = Sequential()
 
     # =====================================
-    # INPUT LAYER
+    # INPUT
     # =====================================
 
     model.add(
+        Input(shape=input_shape)
+    )
 
+    # =====================================
+    # BLOCK 1
+    # =====================================
+
+    model.add(
         Dense(
+            512,
+            activation="relu"
+        )
+    )
 
+    model.add(
+        BatchNormalization()
+    )
+
+    model.add(
+        Dropout(0.40)
+    )
+
+    # =====================================
+    # BLOCK 2
+    # =====================================
+
+    model.add(
+        Dense(
             256,
-
-            activation='relu',
-
-            input_shape=input_shape
+            activation="relu"
         )
     )
-
-    # =====================================
-    # NORMALIZATION
-    # =====================================
 
     model.add(
         BatchNormalization()
     )
 
-    # =====================================
-    # DROPOUT
-    # =====================================
-
     model.add(
-
-        Dropout(0.3)
+        Dropout(0.35)
     )
 
     # =====================================
-    # SECOND DENSE BLOCK
+    # BLOCK 3
     # =====================================
 
     model.add(
-
         Dense(
-
             128,
-
-            activation='relu'
+            activation="relu"
         )
     )
 
@@ -73,21 +78,17 @@ def build_transformer(input_shape):
     )
 
     model.add(
-
-        Dropout(0.3)
+        Dropout(0.30)
     )
 
     # =====================================
-    # THIRD DENSE BLOCK
+    # BLOCK 4
     # =====================================
 
     model.add(
-
         Dense(
-
             64,
-
-            activation='relu'
+            activation="relu"
         )
     )
 
@@ -96,57 +97,44 @@ def build_transformer(input_shape):
     )
 
     model.add(
-
-        Dropout(0.2)
+        Dropout(0.25)
     )
 
     # =====================================
-    # FOURTH DENSE BLOCK
+    # BLOCK 5
     # =====================================
 
     model.add(
-
         Dense(
-
             32,
-
-            activation='relu'
+            activation="relu"
         )
     )
 
     # =====================================
-    # OUTPUT LAYER
+    # OUTPUT
     # =====================================
 
     model.add(
-
         Dense(
-
-            1,
-
-            activation='sigmoid'
+            num_classes,
+            activation="softmax"
         )
     )
 
     # =====================================
-    # COMPILE MODEL
+    # COMPILE
     # =====================================
 
     model.compile(
-
         optimizer=Adam(
             learning_rate=0.0001
         ),
-
-        loss='binary_crossentropy',
-
-        metrics=['accuracy']
+        loss="categorical_crossentropy",
+        metrics=["accuracy"]
     )
 
-    print(
-        "Transformer model built successfully"
-    )
-
+    print("Transformer model built successfully")
     print("=" * 60)
 
     return model

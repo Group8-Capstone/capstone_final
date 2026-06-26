@@ -15,6 +15,11 @@ from streaming.websocket_manager import (
     websocket_manager
 )
 
+from services.dashboard_service import (
+    get_dashboard_data
+)
+
+
 router = APIRouter()
 
 # =====================================
@@ -266,18 +271,8 @@ def stream():
 @router.get("/api/dashboard")
 def dashboard_metrics():
 
-    return {
+    return get_dashboard_data()
 
-        "total_threats": 124,
-
-        "blocked_attacks": 98,
-
-        "fraud_alerts": 15,
-
-        "ueba_alerts": 6,
-
-        "system_health": "ACTIVE"
-    }
 
 # =====================================
 # INCIDENT RESPONSE API

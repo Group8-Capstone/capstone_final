@@ -1,3 +1,5 @@
+import os
+import json
 import joblib
 import numpy as np
 import pandas as pd
@@ -117,6 +119,41 @@ def train_autoencoder():
     save_anomaly_scores(mse)
 
     print("Anomaly scores saved")
+
+
+    # ------------------------------------
+    # Save Autoencoder Metrics
+    # ------------------------------------
+
+    threshold = np.percentile(mse, 95)
+
+    anomalies = mse > threshold
+
+    metrics = {
+        "model": "Autoencoder",
+        "average_error": round(float(np.mean(mse)), 6),
+        "maximum_error": round(float(np.max(mse)), 6),
+        "threshold": round(float(threshold), 6),
+        "anomalies_detected": int(np.sum(anomalies)),
+        "normal_records": int(len(mse) - np.sum(anomalies)),
+        "anomaly_percentage": round(
+            float(np.sum(anomalies) / len(mse) * 100),
+            2
+        )
+    }
+
+    os.makedirs(
+        "outputs/trained_models/autoencoder",
+        exist_ok=True
+    )
+
+    with open(
+        "outputs/trained_models/autoencoder/metrics.json",
+        "w"
+    ) as f:
+        json.dump(metrics, f, indent=4)
+
+    print("Autoencoder metrics saved.")
 
     save_training_plot(
         history,

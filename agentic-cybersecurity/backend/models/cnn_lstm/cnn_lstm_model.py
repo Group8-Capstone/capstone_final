@@ -1,8 +1,7 @@
-from tensorflow.keras.models import (
-    Sequential
-)
+from tensorflow.keras.models import Sequential
 
 from tensorflow.keras.layers import (
+    Input,
     Conv1D,
     MaxPooling1D,
     LSTM,
@@ -11,12 +10,10 @@ from tensorflow.keras.layers import (
     BatchNormalization
 )
 
-from tensorflow.keras.optimizers import (
-    Adam
-)
+from tensorflow.keras.optimizers import Adam
 
 
-def build_cnn_lstm(input_shape):
+def build_cnn_lstm(input_shape, num_classes):
 
     print("=" * 60)
     print("BUILDING CNN-LSTM MODEL")
@@ -24,69 +21,49 @@ def build_cnn_lstm(input_shape):
 
     model = Sequential()
 
-    # =====================================
-    # CNN BLOCK
-    # =====================================
+    # ==================================================
+    # INPUT
+    # ==================================================
 
     model.add(
+        Input(shape=input_shape)
+    )
 
+    # ==================================================
+    # CNN BLOCK 1
+    # ==================================================
+
+    model.add(
         Conv1D(
-
             filters=64,
-
             kernel_size=3,
-
-            activation='relu',
-
-            padding='same',
-
-            input_shape=input_shape
+            activation="relu",
+            padding="same"
         )
     )
-
-    # =====================================
-    # BATCH NORMALIZATION
-    # =====================================
 
     model.add(
         BatchNormalization()
     )
 
-    # =====================================
-    # MAX POOLING
-    # =====================================
-
     model.add(
-
-        MaxPooling1D(
-            pool_size=2
-        )
+        MaxPooling1D(pool_size=2)
     )
 
-    # =====================================
-    # DROPOUT
-    # =====================================
-
     model.add(
-
-        Dropout(0.3)
+        Dropout(0.30)
     )
 
-    # =====================================
-    # SECOND CNN BLOCK
-    # =====================================
+    # ==================================================
+    # CNN BLOCK 2
+    # ==================================================
 
     model.add(
-
         Conv1D(
-
             filters=128,
-
             kernel_size=3,
-
-            activation='relu',
-
-            padding='same'
+            activation="relu",
+            padding="same"
         )
     )
 
@@ -95,67 +72,64 @@ def build_cnn_lstm(input_shape):
     )
 
     model.add(
-
-        MaxPooling1D(
-            pool_size=2
-        )
+        MaxPooling1D(pool_size=2)
     )
 
     model.add(
-
-        Dropout(0.3)
+        Dropout(0.30)
     )
 
-    # =====================================
-    # LSTM LAYER
-    # =====================================
+    # ==================================================
+    # LSTM
+    # ==================================================
 
     model.add(
-
         LSTM(
-
             64,
-
             return_sequences=False
         )
     )
 
-    # =====================================
-    # DENSE LAYER
-    # =====================================
+    model.add(
+        Dropout(0.30)
+    )
+
+    # ==================================================
+    # DENSE
+    # ==================================================
 
     model.add(
-
         Dense(
+            128,
+            activation="relu"
+        )
+    )
 
+    model.add(
+        Dropout(0.30)
+    )
+
+    model.add(
+        Dense(
             64,
-
-            activation='relu'
+            activation="relu"
         )
     )
 
-    model.add(
-
-        Dropout(0.3)
-    )
-
-    # =====================================
-    # OUTPUT LAYER
-    # =====================================
+    # ==================================================
+    # OUTPUT
+    # ==================================================
 
     model.add(
-
         Dense(
-
-            1,
-
-            activation='sigmoid'
+            num_classes,
+            activation="softmax"
         )
     )
 
-    # =====================================
-    # COMPILE MODEL
-    # =====================================
+    # ==================================================
+    # COMPILE
+    # ==================================================
 
     model.compile(
 
@@ -163,15 +137,15 @@ def build_cnn_lstm(input_shape):
             learning_rate=0.0001
         ),
 
-        loss='binary_crossentropy',
+        loss="sparse_categorical_crossentropy",
 
-        metrics=['accuracy']
+        metrics=["accuracy"]
+
     )
 
-    print(
-        "CNN-LSTM model built successfully"
-    )
-
+    print("CNN-LSTM model built successfully")
+    print("Input Shape :", input_shape)
+    print("Classes     :", num_classes)
     print("=" * 60)
 
     return model

@@ -98,3 +98,47 @@ body {
   
     color: white;
   }
+
+  .metric-card{
+
+    background:#111827;
+
+    color:white;
+
+    padding:20px;
+
+    text-align:center;
+
+    border-radius:10px;
+
+    border:1px solid #334155;
+
+    font-weight:bold;
+
+}
+
+.metric-card:hover{
+
+    transform:scale(1.03);
+
+    transition:.3s;
+
+}
+
+button{
+
+    padding:10px 20px;
+
+    border-radius:8px;
+
+    cursor:pointer;
+
+}
+
+img:hover{
+
+    transform:scale(1.02);
+
+    transition:.3s;
+
+}

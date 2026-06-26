@@ -86,10 +86,21 @@ def train_transformer():
     ############################################################
 
     if len(df) > 50000:
-        df = df.sample(
-            50000,
-            random_state=42
+
+        MAX_PER_CLASS = 3000
+
+        df = (
+            df.groupby("Label", group_keys=False)
+            .apply(
+                lambda x: x.sample(
+                    min(len(x), MAX_PER_CLASS),
+                    random_state=42
+                )
+            )
+            .reset_index(drop=True)
         )
+
+    print(df["Label"].value_counts())
 
     print(f"Sampled Shape: {df.shape}")
 
@@ -122,6 +133,12 @@ def train_transformer():
     encoder = LabelEncoder()
 
     y = encoder.fit_transform(y)
+
+    num_classes = len(np.unique(y))
+
+    from tensorflow.keras.utils import to_categorical
+
+    y = to_categorical(y, num_classes)
 
     ############################################################
     # Select Features
@@ -211,7 +228,7 @@ def train_transformer():
         y,
         test_size=0.20,
         random_state=42,
-        stratify=y
+        stratify=np.argmax(y, axis=1)
     )
 
     print(f"Train Shape : {X_train.shape}")
@@ -222,7 +239,8 @@ def train_transformer():
     ############################################################
 
     model = build_transformer(
-        (X_train.shape[1],)
+        input_shape=(X_train.shape[1],),
+        num_classes=num_classes
     )
 
     print("====================================")
@@ -248,12 +266,11 @@ def train_transformer():
 
     probabilities = model.predict(X_test)
 
-    predictions = (
-        probabilities > 0.5
-    ).astype(int)
+    predictions = np.argmax(probabilities, axis=1)
+    y_true = np.argmax(y_test, axis=1)
 
     accuracy = accuracy_score(
-        y_test,
+        y_true,
         predictions
     )
 
@@ -261,17 +278,39 @@ def train_transformer():
 
     print(
         classification_report(
-            y_test,
+            y_true,
             predictions
         )
     )
+
+    report = classification_report(
+        y_true,
+        predictions,
+        output_dict=True,
+        zero_division=0
+    )
+
+    metrics = {
+        "accuracy": round(float(accuracy) * 100, 2),
+        "precision": round(float(report["weighted avg"]["precision"]) * 100, 2),
+        "recall": round(float(report["weighted avg"]["recall"]) * 100, 2),
+        "f1_score": round(float(report["weighted avg"]["f1-score"]) * 100, 2)
+    }
+
+    with open(
+        os.path.join(MODEL_DIR, "metrics.json"),
+        "w"
+    ) as f:
+        json.dump(metrics, f, indent=4)
+
+    print("Metrics saved successfully.")
 
     ############################################################
     # Reports
     ############################################################
 
     save_classification_report(
-        y_test,
+        y_true,
         predictions,
         "transformer"
     )
@@ -282,7 +321,7 @@ def train_transformer():
     )
 
     save_confusion_matrix(
-        y_test,
+        y_true,
         predictions,
         "transformer"
     )
@@ -294,7 +333,7 @@ def train_transformer():
 
     try:
         save_roc_curve(
-            y_test,
+            y_true,
             probabilities,
             "transformer"
         )

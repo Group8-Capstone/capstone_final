@@ -16,6 +16,7 @@ def generate_lime_plot(
     model,
     X_train,
     X_sample,
+    feature_names=None,
     model_name="fraud_detection",
     output_dir="outputs/explainability/lime"
 ):
@@ -27,6 +28,7 @@ def generate_lime_plot(
     print("GENERATING LIME EXPLANATION")
     print("=" * 60)
 
+    
     try:
 
         apply_plot_style()
@@ -37,21 +39,41 @@ def generate_lime_plot(
         )
 
         # ---------------------------------
-        # Load saved feature names
+        # Dynamic Feature Names
         # ---------------------------------
 
-        feature_path = (
-            f"outputs/trained_models/"
-            f"{model_name}/feature_names.pkl"
-        )
+        if feature_names is None:
 
-        if os.path.exists(feature_path):
-            feature_names = joblib.load(feature_path)
-        else:
-            feature_names = [
-                f"Feature_{i}"
-                for i in range(X_train.shape[1])
-            ]
+            if hasattr(X_train, "columns"):
+
+                feature_names = X_train.columns.tolist()
+
+            else:
+
+                feature_path = (
+                    f"outputs/trained_models/"
+                    f"{model_name}/feature_names.pkl"
+                )
+
+                if os.path.exists(feature_path):
+
+                    feature_names = joblib.load(feature_path)
+
+                else:
+
+                    feature_names = [
+                        f"Feature_{i}"
+                        for i in range(
+                            np.asarray(X_train).shape[1]
+                        )
+                    ]
+
+        print("=" * 60)
+        print("MODEL :", model_name)
+        print("Feature Count :", len(feature_names))
+        print("First 10 Features :")
+        print(feature_names[:10])
+        print("=" * 60)
 
         # ---------------------------------
         # Build LIME explainer

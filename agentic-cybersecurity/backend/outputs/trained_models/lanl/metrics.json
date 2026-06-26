@@ -1,0 +1,10 @@
+{
+    "model": "LANL UEBA",
+    "algorithm": "Isolation Forest",
+    "total_records": 50000,
+    "anomalies_detected": 1000,
+    "normal_records": 49000,
+    "anomaly_percentage": 2.0,
+    "unique_users": 49287,
+    "unique_computers": 6919
+}

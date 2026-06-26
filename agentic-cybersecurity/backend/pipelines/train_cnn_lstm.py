@@ -92,10 +92,21 @@ def train_cnn_lstm():
     #############################################################
 
     if len(df) > 50000:
-        df = df.sample(
-            50000,
-            random_state=42
+        MAX_PER_CLASS = 3000
+
+        df = (
+            df.groupby("Label", group_keys=False)
+            .apply(
+                lambda x: x.sample(
+                    min(len(x), MAX_PER_CLASS),
+                    random_state=42
+                )
+            )
+            .reset_index(drop=True)
         )
+
+        print("Balanced Shape :", df.shape)
+        print(df["Label"].value_counts())
 
     print("Working Shape:", df.shape)
 
@@ -200,6 +211,15 @@ def train_cnn_lstm():
         stratify=y
     )
 
+
+    import pandas as pd
+
+    print("=" * 80)
+    print("Label Distribution")
+    print("=" * 80)
+    print(pd.Series(y).value_counts())
+    print("=" * 80)
+
     #############################################################
     # CNN-LSTM Reshape
     #############################################################
@@ -223,8 +243,11 @@ def train_cnn_lstm():
     # Build Model
     #############################################################
 
+    num_classes = len(np.unique(y))
+
     model = build_cnn_lstm(
-        input_shape=(X_train.shape[1], 1)
+        input_shape=(X_train.shape[1], 1),
+        num_classes=num_classes
     )
 
     #############################################################
@@ -246,13 +269,21 @@ def train_cnn_lstm():
 
     probabilities = model.predict(X_test)
 
-    predictions = (
-        probabilities > 0.5
-    ).astype(int)
+    predictions = np.argmax(
+        probabilities,
+        axis=1
+    )
 
     accuracy = accuracy_score(
         y_test,
         predictions
+    )
+
+    report = classification_report(
+        y_test,
+        predictions,
+        output_dict=True,
+        zero_division=0
     )
 
     print("\nAccuracy :", accuracy)
@@ -260,9 +291,29 @@ def train_cnn_lstm():
     print(
         classification_report(
             y_test,
-            predictions
+            predictions,
+            zero_division=0
         )
     )
+
+    #############################################################
+    # Save Metrics
+    #############################################################
+
+    metrics = {
+        "accuracy": round(float(accuracy) * 100, 2),
+        "precision": round(float(report["weighted avg"]["precision"]) * 100, 2),
+        "recall": round(float(report["weighted avg"]["recall"]) * 100, 2),
+        "f1_score": round(float(report["weighted avg"]["f1-score"]) * 100, 2)
+    }
+
+    with open(
+        os.path.join(MODEL_DIR, "metrics.json"),
+        "w"
+    ) as f:
+        json.dump(metrics, f, indent=4)
+
+    print("Metrics saved successfully.")
 
     #############################################################
     # Reports
