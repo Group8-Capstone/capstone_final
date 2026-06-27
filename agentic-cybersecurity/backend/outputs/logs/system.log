@@ -1,10 +1,12 @@
-2026-06-27 03:34:33,506 - INFO - Checking trained models
-2026-06-27 03:35:01,782 - INFO - Autoencoder trained successfully
-2026-06-27 03:35:55,135 - INFO - CNN-LSTM trained successfully
-2026-06-27 03:36:25,739 - INFO - Transformer trained successfully
-2026-06-27 03:36:35,319 - INFO - Fraud Detection trained successfully
-2026-06-27 03:37:08,930 - INFO - LANL trained successfully
-2026-06-27 03:37:09,294 - INFO - All models initialized successfully
-2026-06-27 03:37:14,778 - INFO - Evaluation pipeline completed
-2026-06-27 03:37:14,779 - INFO - Inference pipeline error : __init__() got an unexpected keyword argument 'cnn_model'
-2026-06-27 03:37:14,783 - INFO - Models initialized successfully
+2026-06-27 11:49:34,605 - INFO - Checking trained models
+2026-06-27 11:50:04,059 - INFO - Autoencoder trained successfully
+2026-06-27 11:50:55,210 - INFO - CNN-LSTM trained successfully
+2026-06-27 11:51:24,808 - INFO - Transformer trained successfully
+2026-06-27 11:51:32,273 - INFO - Fraud Detection trained successfully
+2026-06-27 11:51:56,818 - INFO - LANL trained successfully
+2026-06-27 11:51:57,063 - INFO - All models initialized successfully
+2026-06-27 11:52:00,288 - INFO - Evaluation pipeline completed
+2026-06-27 11:52:00,850 - INFO - Inference pipeline completed
+2026-06-27 11:52:00,852 - INFO - Models initialized successfully
+2026-06-27 17:38:00,338 - WARNING - 5 out of the last 198 calls to <function TensorFlowTrainer.make_predict_function.<locals>.one_step_on_data_distributed at 0x15e6934c0> triggered tf.function retracing. Tracing is expensive and the excessive number of tracings could be due to (1) creating @tf.function repeatedly in a loop, (2) passing tensors with different shapes, (3) passing Python objects instead of tensors. For (1), please define your @tf.function outside of the loop. For (2), @tf.function has reduce_retracing=True option that can avoid unnecessary retracing. For (3), please refer to https://www.tensorflow.org/guide/function#controlling_retracing and https://www.tensorflow.org/api_docs/python/tf/function for  more details.
+2026-06-27 17:38:00,386 - WARNING - 6 out of the last 199 calls to <function TensorFlowTrainer.make_predict_function.<locals>.one_step_on_data_distributed at 0x15e6935e0> triggered tf.function retracing. Tracing is expensive and the excessive number of tracings could be due to (1) creating @tf.function repeatedly in a loop, (2) passing tensors with different shapes, (3) passing Python objects instead of tensors. For (1), please define your @tf.function outside of the loop. For (2), @tf.function has reduce_retracing=True option that can avoid unnecessary retracing. For (3), please refer to https://www.tensorflow.org/guide/function#controlling_retracing and https://www.tensorflow.org/api_docs/python/tf/function for  more details.
